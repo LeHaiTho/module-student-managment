@@ -27,15 +27,23 @@ PY
     )"
 fi
 
+if [ -n "${ODOO_MASTER_PASSWORD:-}" ]; then
+    python3 - "$ODOO_RC" "$ODOO_MASTER_PASSWORD" <<'PY'
+import configparser
+import sys
+
+conf_path, password = sys.argv[1], sys.argv[2]
+config = configparser.ConfigParser()
+config.read(conf_path)
+config["options"]["admin_passwd"] = password
+with open(conf_path, "w") as f:
+    config.write(f)
+PY
+fi
+
 if [ "${ODOO_AUTO_INIT:-true}" = "true" ] && [ -n "${ODOO_DB_NAME:-}" ]; then
     install_modules="${ODOO_INSTALL_MODULES:-base}"
-    odoo_args=(odoo -d "$ODOO_DB_NAME" -i "$install_modules" --without-demo=all)
-
-    if [ -n "${ODOO_MASTER_PASSWORD:-}" ]; then
-        odoo_args+=(--admin-passwd "$ODOO_MASTER_PASSWORD")
-    fi
-
-    exec /entrypoint.sh "${odoo_args[@]}"
+    exec /entrypoint.sh odoo -d "$ODOO_DB_NAME" -i "$install_modules" --without-demo=all
 fi
 
 exec /entrypoint.sh "$@"
