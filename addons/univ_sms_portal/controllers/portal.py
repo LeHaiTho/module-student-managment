@@ -4,6 +4,16 @@ from odoo.http import request, route
 
 class UnivSmsPortal(CustomerPortal):
 
+    # ─── AUTO-REDIRECT SINH VIÊN SAU KHI ĐĂNG NHẬP ─────────────────────────────
+
+    @route(['/my', '/my/home'], type='http', auth='user', website=True)
+    def home(self, **kw):
+        if not request.env.user._is_public():
+            student = self._get_student()
+            if student:
+                return request.redirect('/my/academic')
+        return super().home(**kw)
+
     # ─── LANDING PAGE ────────────────────────────────────────────────────────
 
     @route(['/university', '/university/'], type='http', auth='public', website=False)
