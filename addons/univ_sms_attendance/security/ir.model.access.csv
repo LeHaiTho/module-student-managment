@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_univ_sms_attendance_sheet_admin,sheet.admin,model_univ_sms_attendance_sheet,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_attendance_sheet_officer,sheet.officer,model_univ_sms_attendance_sheet,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_attendance_sheet_lecturer,sheet.lecturer,model_univ_sms_attendance_sheet,univ_sms_base.group_univ_lecturer,1,1,1,0
+access_univ_sms_attendance_line_admin,line.admin,model_univ_sms_attendance_line,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_attendance_line_officer,line.officer,model_univ_sms_attendance_line,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_attendance_line_lecturer,line.lecturer,model_univ_sms_attendance_line,univ_sms_base.group_univ_lecturer,1,1,1,0
+access_univ_sms_attendance_line_portal,line.portal,model_univ_sms_attendance_line,base.group_portal,1,0,0,0

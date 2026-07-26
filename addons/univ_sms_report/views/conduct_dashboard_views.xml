@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_conduct_score_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.score.pivot</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân loại rèn luyện">
+                <field name="student_id" type="row"/>
+                <field name="classification" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_conduct_score_graph" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.score.graph</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="arch" type="xml">
+            <graph string="Phân bổ điểm rèn luyện" type="bar">
+                <field name="classification" type="row"/>
+                <field name="period_id" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_conduct_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Rèn luyện</field>
+        <field name="res_model">univ.sms.conduct.score</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

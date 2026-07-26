@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_military_service_tree" model="ir.ui.view">
+        <field name="name">univ.sms.military.service.tree</field>
+        <field name="model">univ.sms.military.service</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="registration_status"/>
+                <field name="declared_date"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_military_service_form" model="ir.ui.view">
+        <field name="name">univ.sms.military.service.form</field>
+        <field name="model">univ.sms.military.service</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Nộp"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_approve" type="object" string="Duyệt"
+                            invisible="state != 'submitted'" class="btn-success"/>
+                    <button name="action_reject" type="object" string="Từ chối"
+                            invisible="state != 'submitted'" class="btn-danger"/>
+                    <button name="action_draft" type="object" string="Đặt lại nháp"
+                            invisible="state not in ('rejected', 'approved')"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="registration_status"/>
+                            <field name="declared_date"/>
+                        </group>
+                        <group>
+                            <field name="local_authority_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="document_attachment_ids" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_military_service" model="ir.actions.act_window">
+        <field name="name">Nghĩa vụ quân sự</field>
+        <field name="res_model">univ.sms.military.service</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

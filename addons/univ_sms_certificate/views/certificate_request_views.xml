@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_certificate_request_tree" model="ir.ui.view">
+        <field name="name">univ.sms.certificate.request.tree</field>
+        <field name="model">univ.sms.certificate.request</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="certificate_type_id"/>
+                <field name="request_date"/>
+                <field name="fee_payment_state" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_certificate_request_form" model="ir.ui.view">
+        <field name="name">univ.sms.certificate.request.form</field>
+        <field name="model">univ.sms.certificate.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" type="object" string="Duyệt"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_complete" type="object" string="Hoàn thành"
+                            invisible="state != 'approved'" class="btn-success"/>
+                    <button name="action_reject" type="object" string="Từ chối"
+                            invisible="state not in ('draft', 'approved')" class="btn-danger"/>
+                    <button name="action_draft" type="object" string="Đặt lại nháp"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="certificate_type_id" options="{'no_create': True}"/>
+                            <field name="request_date"/>
+                        </group>
+                        <group>
+                            <field name="fee_amount"/>
+                            <field name="fee_payment_state"/>
+                            <field name="output_file"/>
+                            <field name="output_filename"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_certificate_request_search" model="ir.ui.view">
+        <field name="name">univ.sms.certificate.request.search</field>
+        <field name="model">univ.sms.certificate.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="student_id"/>
+                <field name="certificate_type_id"/>
+                <field name="state"/>
+                <filter name="state_draft" string="Chờ duyệt"
+                        domain="[('state', '=', 'draft')]"/>
+                <filter name="state_approved" string="Đã duyệt"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter name="state_completed" string="Hoàn thành"
+                        domain="[('state', '=', 'completed')]"/>
+                <group expand="0" string="Nhóm">
+                    <filter string="Khổ trạng thái" name="group_by_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Loại giấy" name="group_by_type"
+                            context="{'group_by': 'certificate_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_certificate_request" model="ir.actions.act_window">
+        <field name="name">Yêu cầu giấy chứng nhận</field>
+        <field name="res_model">univ.sms.certificate.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

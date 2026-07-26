@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_certificates" name="Student Certificates">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc_table">
+                <h3>Giấy chứng nhận</h3>
+                <form class="row g-2 mt-3 mb-4" action="/my/academic/certificates/create" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-4">
+                        <select name="certificate_type_id" class="form-select" required="required">
+                            <option value="">Chọn loại giấy</option>
+                            <option t-foreach="certificate_types" t-as="type" t-att-value="type.id">
+                                <t t-esc="type.name"/>
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input name="reason" class="form-control" placeholder="Lý do yêu cầu"/>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">Gửi yêu cầu</button>
+                    </div>
+                </form>
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>Loại giấy</th><th>Ngày yêu cầu</th><th>Phí</th><th>Thanh toán</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="certificate_requests" t-as="req">
+                            <td><t t-esc="req.certificate_type_id.name"/></td>
+                            <td><t t-esc="req.request_date"/></td>
+                            <td><t t-esc="'{:,.0f}'.format(req.fee_amount or 0)"/> đ</td>
+                            <td><t t-esc="dict(req._fields['fee_payment_state'].selection).get(req.fee_payment_state)"/></td>
+                            <td><span class="badge bg-secondary"><t t-esc="dict(req._fields['state'].selection).get(req.state)"/></span></td>
+                        </tr>
+                        <tr t-if="not certificate_requests"><td colspan="5" class="text-center text-muted">Chưa có yêu cầu giấy.</td></tr>
+                    </tbody>
+                </table>
+                <a href="/my/academic" class="btn btn-sm btn-outline-secondary">← Quay lại</a>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_student_affairs" name="Student Affairs">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc_table">
+                <h3>Công tác sinh viên</h3>
+                <h5 class="mt-4">Nghĩa vụ quân sự</h5>
+                <form class="row g-2 mb-3" action="/my/academic/student-affairs/military/create" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-6">
+                        <select name="registration_status" class="form-select" required="required">
+                            <option value="">Chọn trạng thái khai báo</option>
+                            <option value="not_registered">Chưa đăng ký NVQS</option>
+                            <option value="registered">Đã đăng ký</option>
+                            <option value="deferred">Tạm hoãn vì đang học</option>
+                            <option value="completed">Đã hoàn thành NVQS</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" type="submit">Nộp khai báo</button>
+                    </div>
+                </form>
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>Ngày khai báo</th><th>Tình trạng NVQS</th><th>Trạng thái duyệt</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="military_services" t-as="line">
+                            <td><t t-esc="line.declared_date"/></td>
+                            <td><t t-esc="dict(line._fields['registration_status'].selection).get(line.registration_status)"/></td>
+                            <td><span class="badge bg-secondary"><t t-esc="dict(line._fields['state'].selection).get(line.state)"/></span></td>
+                        </tr>
+                        <tr t-if="not military_services"><td colspan="3" class="text-center text-muted">Chưa có khai báo NVQS.</td></tr>
+                    </tbody>
+                </table>
+                <h5 class="mt-4">Bảo hiểm y tế</h5>
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>Mã thẻ</th><th>Từ ngày</th><th>Đến ngày</th><th>Thanh toán</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="health_insurances" t-as="ins">
+                            <td><t t-esc="ins.insurance_code"/></td>
+                            <td><t t-esc="ins.date_start"/></td>
+                            <td><t t-esc="ins.date_end"/></td>
+                            <td><t t-esc="dict(ins._fields['payment_state'].selection).get(ins.payment_state)"/></td>
+                            <td><t t-esc="dict(ins._fields['state'].selection).get(ins.state)"/></td>
+                        </tr>
+                        <tr t-if="not health_insurances"><td colspan="5" class="text-center text-muted">Chưa có dữ liệu BHYT.</td></tr>
+                    </tbody>
+                </table>
+                <h5 class="mt-4">Ngoại trú / cư trú</h5>
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>Loại cư trú</th><th>Địa chỉ</th><th>Ngày hiệu lực</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="residences" t-as="res">
+                            <td><t t-esc="dict(res._fields['residence_type'].selection).get(res.residence_type)"/></td>
+                            <td><t t-esc="res.address"/></td>
+                            <td><t t-esc="res.effective_date"/></td>
+                            <td><t t-esc="dict(res._fields['state'].selection).get(res.state)"/></td>
+                        </tr>
+                        <tr t-if="not residences"><td colspan="4" class="text-center text-muted">Chưa có dữ liệu cư trú.</td></tr>
+                    </tbody>
+                </table>
+                <a href="/my/academic" class="btn btn-sm btn-outline-secondary">← Quay lại</a>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_conduct" name="Conduct Scores">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc_table">
+                <h3>Điểm rèn luyện</h3>
+                <table class="table table-sm table-striped mt-3">
+                    <thead><tr><th>Học kỳ</th><th>Tự chấm</th><th>CVHT duyệt</th><th>Điểm cuối</th><th>Xếp loại</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="conduct_scores" t-as="score">
+                            <td><t t-esc="score.period_id.name"/></td>
+                            <td><t t-esc="score.self_total"/></td>
+                            <td><t t-esc="score.advisor_total"/></td>
+                            <td><t t-esc="score.final_total"/></td>
+                            <td><t t-esc="dict(score._fields['classification'].selection).get(score.classification)"/></td>
+                            <td><span class="badge bg-secondary"><t t-esc="dict(score._fields['state'].selection).get(score.state)"/></span></td>
+                        </tr>
+                        <tr t-if="not conduct_scores"><td colspan="6" class="text-center text-muted">Chưa có điểm rèn luyện.</td></tr>
+                    </tbody>
+                </table>
+                <a href="/my/academic" class="btn btn-sm btn-outline-secondary">← Quay lại</a>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_surveys" name="Surveys">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc_table">
+                <h3>Khảo sát</h3>
+                <t t-if="not surveys">
+                    <div class="alert alert-info mt-3">Hiện chưa có khảo sát đang mở.</div>
+                </t>
+                <div t-foreach="surveys" t-as="survey" class="border rounded p-3 mt-3">
+                    <h5><t t-esc="survey.name"/></h5>
+                    <p class="text-muted mb-2"><t t-esc="survey.survey_type_id.name"/> | Hạn: <t t-esc="survey.date_end"/></p>
+                    <t t-if="survey.id in answered_ids">
+                        <span class="badge bg-success">Đã gửi phản hồi</span>
+                    </t>
+                    <form t-else="" action="/my/academic/surveys/submit" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="survey_instance_id" t-att-value="survey.id"/>
+                        <textarea name="answer_data" class="form-control mb-2" rows="3" required="required" placeholder="Nhập phản hồi khảo sát"></textarea>
+                        <button class="btn btn-primary btn-sm" type="submit">Gửi phản hồi</button>
+                    </form>
+                </div>
+                <a href="/my/academic" class="btn btn-sm btn-outline-secondary mt-3">← Quay lại</a>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_feedback" name="Feedback">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_my_doc_table">
+                <h3>Góp ý / phản hồi</h3>
+                <form class="row g-2 mt-3 mb-4" action="/my/academic/feedback/create" method="post">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="col-md-3">
+                        <select name="category" class="form-select" required="required">
+                            <option value="academic">Học vụ</option>
+                            <option value="facility">Cơ sở vật chất</option>
+                            <option value="service">Dịch vụ hành chính</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="department_id" class="form-select">
+                            <option value="">Chọn bộ phận</option>
+                            <option t-foreach="departments" t-as="dep" t-att-value="dep.id"><t t-esc="dep.name"/></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input name="subject" class="form-control" required="required" placeholder="Tiêu đề"/>
+                    </div>
+                    <div class="col-12">
+                        <textarea name="description" class="form-control" rows="3" required="required" placeholder="Nội dung góp ý"></textarea>
+                    </div>
+                    <div class="col-auto"><button class="btn btn-primary" type="submit">Gửi góp ý</button></div>
+                </form>
+                <table class="table table-sm table-striped">
+                    <thead><tr><th>Tiêu đề</th><th>Loại</th><th>Bộ phận</th><th>Trạng thái</th><th>Phản hồi</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="feedbacks" t-as="fb">
+                            <td><t t-esc="fb.subject"/></td>
+                            <td><t t-esc="dict(fb._fields['category'].selection).get(fb.category)"/></td>
+                            <td><t t-esc="fb.department_id.name or ''"/></td>
+                            <td><span class="badge bg-secondary"><t t-esc="dict(fb._fields['state'].selection).get(fb.state)"/></span></td>
+                            <td><t t-esc="fb.response or ''"/></td>
+                        </tr>
+                        <tr t-if="not feedbacks"><td colspan="5" class="text-center text-muted">Chưa có góp ý.</td></tr>
+                    </tbody>
+                </table>
+                <a href="/my/academic" class="btn btn-sm btn-outline-secondary">← Quay lại</a>
+            </div>
+        </t>
+    </template>
+</odoo>

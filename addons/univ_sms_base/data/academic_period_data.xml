@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Năm học 2025-2026 -->
+        <record id="academic_year_2025" model="univ.sms.academic.year">
+            <field name="name">2025-2026</field>
+            <field name="date_start">2025-09-01</field>
+            <field name="date_end">2026-08-31</field>
+        </record>
+
+        <!-- Học kỳ 1 -->
+        <record id="term_2025_hk1" model="univ.sms.term">
+            <field name="name">Học kỳ 1</field>
+            <field name="academic_year_id" ref="academic_year_2025"/>
+            <field name="date_start">2025-09-01</field>
+            <field name="date_end">2026-01-15</field>
+        </record>
+
+        <!-- Học kỳ 2 -->
+        <record id="term_2025_hk2" model="univ.sms.term">
+            <field name="name">Học kỳ 2</field>
+            <field name="academic_year_id" ref="academic_year_2025"/>
+            <field name="date_start">2026-01-16</field>
+            <field name="date_end">2026-06-30</field>
+        </record>
+
+        <!-- Học kỳ hè -->
+        <record id="term_2025_he" model="univ.sms.term">
+            <field name="name">Học kỳ hè</field>
+            <field name="academic_year_id" ref="academic_year_2025"/>
+            <field name="date_start">2026-07-01</field>
+            <field name="date_end">2026-08-31</field>
+        </record>
+    </data>
+</odoo>

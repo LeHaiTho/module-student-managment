@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_certificate_type_admin,certificate.type.admin,model_univ_sms_certificate_type,univ_sms_base.group_univ_admin,1,1,1,1
+access_certificate_type_officer,certificate.type.officer,model_univ_sms_certificate_type,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_certificate_request_admin,certificate.request.admin,model_univ_sms_certificate_request,univ_sms_base.group_univ_admin,1,1,1,1
+access_certificate_request_officer,certificate.request.officer,model_univ_sms_certificate_request,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_certificate_request_student,certificate.request.student,model_univ_sms_certificate_request,base.group_portal,1,1,1,0
+access_certificate_request_lecturer,certificate.request.lecturer,model_univ_sms_certificate_request,univ_sms_base.group_univ_lecturer,1,0,0,0

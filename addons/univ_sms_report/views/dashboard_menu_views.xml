@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_dashboard_root" name="📈 Dashboards"
+              parent="univ_sms_base.menu_univ_sms_root" sequence="110"/>
+
+    <menuitem id="menu_student_dashboard"
+              name="👨‍🎓 SV Dashboard" parent="menu_dashboard_root"
+              action="action_student_dashboard" sequence="10"/>
+
+    <menuitem id="menu_attendance_dashboard"
+              name="✅ Điểm danh Dashboard" parent="menu_dashboard_root"
+              action="action_attendance_dashboard" sequence="20"/>
+
+    <menuitem id="menu_exam_dashboard"
+              name="🏆 Điểm thi Dashboard" parent="menu_dashboard_root"
+              action="action_exam_dashboard" sequence="30"/>
+
+    <menuitem id="menu_fee_dashboard"
+              name="💰 Học phí Dashboard" parent="menu_dashboard_root"
+              action="action_fee_dashboard" sequence="40"/>
+
+    <menuitem id="menu_registration_dashboard"
+              name="✍️ Đăng ký môn Dashboard" parent="menu_dashboard_root"
+              action="action_registration_dashboard" sequence="50"/>
+
+    <menuitem id="menu_conduct_dashboard"
+              name="💯 Rèn luyện Dashboard" parent="menu_dashboard_root"
+              action="action_conduct_dashboard" sequence="60"/>
+</odoo>

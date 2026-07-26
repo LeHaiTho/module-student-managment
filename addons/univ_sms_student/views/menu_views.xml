@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Student Management Menu -->
+    <menuitem id="menu_univ_sms_student_mgmt"
+              name="Sinh viên"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="15"/>
+
+    <menuitem id="menu_univ_sms_student_list"
+              name="Danh sách sinh viên"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_student"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_student_lookup"
+              name="Tra cứu sinh viên"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_student_lookup"
+              sequence="5"/>
+
+    <menuitem id="menu_univ_sms_home_class_list"
+              name="Lớp hành chính"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_home_class"
+              sequence="15"/>
+
+    <menuitem id="menu_univ_sms_enrollment_list"
+              name="Đăng ký học"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_enrollment"
+              sequence="20"/>
+    <menuitem id="menu_univ_sms_student_create"
+              name="Thêm sinh viên mới"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_student_create"
+              sequence="8"/>
+</odoo>

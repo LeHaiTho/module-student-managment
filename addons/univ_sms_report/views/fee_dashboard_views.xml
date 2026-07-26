@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_fee_invoice_graph" model="ir.ui.view">
+        <field name="name">univ.sms.fee.invoice.graph</field>
+        <field name="model">univ.sms.fee.invoice</field>
+        <field name="arch" type="xml">
+            <graph string="Học phí theo học kỳ" type="bar">
+                <field name="term_id" type="row"/>
+                <field name="state" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_fee_invoice_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.fee.invoice.pivot</field>
+        <field name="model">univ.sms.fee.invoice</field>
+        <field name="arch" type="xml">
+            <pivot string="Tổng hợp học phí">
+                <field name="student_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_fee_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Học phí</field>
+        <field name="res_model">univ.sms.fee.invoice</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

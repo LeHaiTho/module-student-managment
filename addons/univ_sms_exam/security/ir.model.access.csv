@@ -1,0 +1,17 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_univ_sms_exam_admin,univ.sms.exam admin,model_univ_sms_exam,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_exam_officer,univ.sms.exam officer,model_univ_sms_exam,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_exam_lecturer,univ.sms.exam lecturer,model_univ_sms_exam,univ_sms_base.group_univ_lecturer,1,1,1,0
+access_univ_sms_exam_portal,univ.sms.exam portal,model_univ_sms_exam,base.group_portal,1,0,0,0
+access_univ_sms_exam_result_admin,univ.sms.exam.result admin,model_univ_sms_exam_result,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_exam_result_officer,univ.sms.exam.result officer,model_univ_sms_exam_result,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_exam_result_lecturer,univ.sms.exam.result lecturer,model_univ_sms_exam_result,univ_sms_base.group_univ_lecturer,1,1,1,0
+access_univ_sms_exam_result_portal,univ.sms.exam.result portal,model_univ_sms_exam_result,base.group_portal,1,0,0,0
+access_univ_sms_transcript_admin,univ.sms.transcript admin,model_univ_sms_transcript,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_transcript_officer,univ.sms.transcript officer,model_univ_sms_transcript,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_transcript_lecturer,univ.sms.transcript lecturer,model_univ_sms_transcript,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_transcript_portal,univ.sms.transcript portal,model_univ_sms_transcript,base.group_portal,1,0,0,0
+access_univ_sms_transcript_line_admin,univ.sms.transcript.line admin,model_univ_sms_transcript_line,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_transcript_line_officer,univ.sms.transcript.line officer,model_univ_sms_transcript_line,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_transcript_line_lecturer,univ.sms.transcript.line lecturer,model_univ_sms_transcript_line,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_transcript_line_portal,univ.sms.transcript.line portal,model_univ_sms_transcript_line,base.group_portal,1,0,0,0

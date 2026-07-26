@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_certificate" model="ir.actions.report">
+        <field name="name">Giấy chứng nhận</field>
+        <field name="model">univ.sms.certificate.request</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">univ_sms_report.report_certificate_template</field>
+        <field name="report_file">univ_sms_report.report_certificate_template</field>
+        <field name="print_report_name">'Giay_chung_nhan_%s' % (object.student_id.student_code)</field>
+        <field name="binding_model_id" ref="univ_sms_certificate.model_univ_sms_certificate_request"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_certificate_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center mb-4">
+                            <h2>GIẤY CHỨNG NHẬN SINH VIÊN</h2>
+                            <h4><span t-esc="doc.certificate_type_id.name"/></h4>
+                        </div>
+                        <div class="mt-4 mb-4">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td style="width:40%;"><strong>Họ và tên:</strong></td>
+                                    <td><span t-field="doc.student_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Mã số sinh viên:</strong></td>
+                                    <td><span t-field="doc.student_id.student_code"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngành học:</strong></td>
+                                    <td><span t-esc="doc.student_id.program_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lớp hành chính:</strong></td>
+                                    <td><span t-esc="doc.student_id.home_class_id.name or '—'"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Loại giấy yêu cầu:</strong></td>
+                                    <td><span t-field="doc.certificate_type_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lý do / Mục đích:</strong></td>
+                                    <td><span t-field="doc.reason"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày yêu cầu:</strong></td>
+                                    <td><span t-field="doc.request_date"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="mt-4">
+                            <p>Phòng Công tác Sinh viên xác nhận sinh viên trên đang theo học tại trường và đủ điều kiện được cấp giấy chứng nhận theo yêu cầu.</p>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <strong>Phòng Công tác Sinh viên</strong><br/><br/><br/>Ký tên và đóng dấu
+                            </div>
+                            <div class="col-6 text-center">
+                                <strong>Ngày ......./......./........</strong>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

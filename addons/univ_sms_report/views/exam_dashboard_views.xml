@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_exam_result_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.exam.result.pivot</field>
+        <field name="model">univ.sms.exam.result</field>
+        <field name="arch" type="xml">
+            <pivot string="Điểm trung bình theo kỳ thi">
+                <field name="exam_id" type="row"/>
+                <field name="student_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_exam_result_graph" model="ir.ui.view">
+        <field name="name">univ.sms.exam.result.graph</field>
+        <field name="model">univ.sms.exam.result</field>
+        <field name="arch" type="xml">
+            <graph string="Phân bổ điểm thi" type="bar">
+                <field name="exam_id" type="row"/>
+                <field name="score" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_exam_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Điểm thi</field>
+        <field name="res_model">univ.sms.exam.result</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

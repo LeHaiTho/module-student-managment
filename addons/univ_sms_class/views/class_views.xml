@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_univ_sms_class_form" model="ir.ui.view">
+        <field name="name">univ.sms.class.form</field>
+        <field name="model">univ.sms.class</field>
+        <field name="arch" type="xml">
+            <form string="Lớp học">
+                <header>
+                    <button name="action_open" string="Mở lớp"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_close" string="Kết thúc"
+                            type="object"
+                            invisible="state != 'open'"/>
+                    <button name="action_reset_draft" string="Về dự kiến"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,open,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-users"
+                                type="object" name="action_view_enrollments">
+                            <field name="enrollment_count" widget="statinfo" string="Sinh viên"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Tên lớp"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="subject_id"/>
+                            <field name="lecturer_id"/>
+                        </group>
+                        <group>
+                            <field name="term_id"/>
+                            <field name="max_students"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Thời khóa biểu" name="timetable">
+                            <field name="timetable_ids">
+                                <tree editable="bottom">
+                                    <field name="day_of_week"/>
+                                    <field name="start_time" widget="float_time"/>
+                                    <field name="end_time" widget="float_time"/>
+                                    <field name="room"/>
+                                    <field name="building"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Danh sách đăng ký" name="enrollments">
+                            <field name="enrollment_ids">
+                                <tree>
+                                    <field name="student_id"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_class_tree" model="ir.ui.view">
+        <field name="name">univ.sms.class.tree</field>
+        <field name="model">univ.sms.class</field>
+        <field name="arch" type="xml">
+            <tree string="Lớp học"
+                  decoration-info="state == 'open'"
+                  decoration-muted="state == 'closed'">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="subject_id"/>
+                <field name="lecturer_id"/>
+                <field name="term_id"/>
+                <field name="enrollment_count"/>
+                <field name="max_students"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'open'"
+                       decoration-success="state == 'closed'"
+                       decoration-muted="state == 'draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_class_search" model="ir.ui.view">
+        <field name="name">univ.sms.class.search</field>
+        <field name="model">univ.sms.class</field>
+        <field name="arch" type="xml">
+            <search string="Tìm lớp học">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="subject_id"/>
+                <field name="lecturer_id"/>
+                <field name="term_id"/>
+                <separator/>
+                <filter name="open" string="Đang mở" domain="[('state', '=', 'open')]"/>
+                <filter name="draft" string="Dự kiến" domain="[('state', '=', 'draft')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_term" string="Học kỳ" context="{'group_by': 'term_id'}"/>
+                    <filter name="group_subject" string="Môn học" context="{'group_by': 'subject_id'}"/>
+                    <filter name="group_lecturer" string="Giảng viên" context="{'group_by': 'lecturer_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_class" model="ir.actions.act_window">
+        <field name="name">Lớp học</field>
+        <field name="res_model">univ.sms.class</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_class_search"/>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Tạo lớp học đầu tiên
+            </p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,28 @@
+{
+    'name': 'University SMS - Portal',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Student Portal for University Student Management System',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': [
+        'portal',
+        'univ_sms_student',
+        'univ_sms_exam',
+        'univ_sms_attendance',
+        'univ_sms_fee',
+        'univ_sms_registration',
+        'univ_sms_class',
+        'univ_sms_certificate',
+        'univ_sms_student_affairs',
+        'univ_sms_conduct',
+        'univ_sms_survey',
+        'univ_sms_feedback',
+    ],
+    'data': [
+        'views/portal_templates.xml',
+        'views/portal_phase67_templates.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

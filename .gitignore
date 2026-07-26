@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.pyo
+
+.env
+.env.*
+*.log
+
+cookies.txt
+temp_cookies.txt
+temp_student_register.html
+nul
+
+test-results/
+
+addons/**/__pycache__/
+addons/**/*.py[cod]

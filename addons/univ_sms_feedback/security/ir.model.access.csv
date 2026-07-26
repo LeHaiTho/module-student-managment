@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_feedback_admin,feedback.admin,model_univ_sms_feedback,univ_sms_base.group_univ_admin,1,1,1,1
+access_feedback_officer,feedback.officer,model_univ_sms_feedback,univ_sms_base.group_univ_academic_officer,1,1,0,0
+access_feedback_student_affairs,feedback.student_affairs,model_univ_sms_feedback,univ_sms_base.group_univ_student_affairs_office,1,1,0,0
+access_feedback_finance,feedback.finance,model_univ_sms_feedback,univ_sms_base.group_univ_finance_office,1,1,0,0
+access_feedback_portal,feedback.portal,model_univ_sms_feedback,base.group_portal,1,1,1,0

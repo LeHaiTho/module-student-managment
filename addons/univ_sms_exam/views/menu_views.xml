@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_univ_sms_exam"
+              name="📝 Kỳ thi"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="50"/>
+
+    <menuitem id="menu_univ_sms_exam_list"
+              name="📅 Danh sách kỳ thi"
+              parent="menu_univ_sms_exam"
+              action="action_univ_sms_exam"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_exam_result"
+              name="🏆 Kết quả thi"
+              parent="menu_univ_sms_exam"
+              action="action_univ_sms_exam_result"
+              sequence="20"/>
+
+    <menuitem id="menu_univ_sms_transcript"
+              name="📊 Bảng điểm"
+              parent="menu_univ_sms_exam"
+              action="action_univ_sms_transcript"
+              sequence="30"/>
+</odoo>

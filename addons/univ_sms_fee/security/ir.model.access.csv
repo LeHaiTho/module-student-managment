@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_univ_sms_fee_admin,univ.sms.fee admin,model_univ_sms_fee,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_fee_officer,univ.sms.fee officer,model_univ_sms_fee,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_fee_finance,univ.sms.fee finance,model_univ_sms_fee,univ_sms_base.group_univ_finance_office,1,1,1,0
+access_univ_sms_fee_lecturer,univ.sms.fee lecturer,model_univ_sms_fee,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_fee_portal,univ.sms.fee portal,model_univ_sms_fee,base.group_portal,1,0,0,0
+access_univ_sms_fee_invoice_admin,univ.sms.fee.invoice admin,model_univ_sms_fee_invoice,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_fee_invoice_officer,univ.sms.fee.invoice officer,model_univ_sms_fee_invoice,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_fee_invoice_finance,univ.sms.fee.invoice finance,model_univ_sms_fee_invoice,univ_sms_base.group_univ_finance_office,1,1,1,0
+access_univ_sms_fee_invoice_lecturer,univ.sms.fee.invoice lecturer,model_univ_sms_fee_invoice,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_fee_invoice_portal,univ.sms.fee.invoice portal,model_univ_sms_fee_invoice,base.group_portal,1,0,0,0
+access_univ_sms_fee_invoice_line_admin,univ.sms.fee.invoice.line admin,model_univ_sms_fee_invoice_line,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_fee_invoice_line_officer,univ.sms.fee.invoice.line officer,model_univ_sms_fee_invoice_line,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_fee_invoice_line_finance,univ.sms.fee.invoice.line finance,model_univ_sms_fee_invoice_line,univ_sms_base.group_univ_finance_office,1,1,1,0
+access_univ_sms_fee_invoice_line_lecturer,univ.sms.fee.invoice.line lecturer,model_univ_sms_fee_invoice_line,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_fee_invoice_line_portal,univ.sms.fee.invoice.line portal,model_univ_sms_fee_invoice_line,base.group_portal,1,0,0,0

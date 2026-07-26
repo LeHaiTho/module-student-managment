@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root Menu -->
+    <menuitem id="menu_univ_sms_root"
+              name="🎓 Quản lý sinh viên"
+              web_icon="univ_sms_base,static/description/icon.png"
+              sequence="10"/>
+
+    <!-- Master Data Menu -->
+    <menuitem id="menu_univ_sms_master"
+              name="📁 Danh mục"
+              parent="menu_univ_sms_root"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_faculty"
+              name="🏫 Khoa"
+              parent="menu_univ_sms_master"
+              action="action_univ_sms_faculty"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_department"
+              name="🏛️ Bộ môn"
+              parent="menu_univ_sms_master"
+              action="action_univ_sms_department"
+              sequence="20"/>
+
+    <menuitem id="menu_univ_sms_program"
+              name="🎓 Ngành đào tạo"
+              parent="menu_univ_sms_master"
+              action="action_univ_sms_program"
+              sequence="30"/>
+
+    <menuitem id="menu_univ_sms_subject"
+              name="📖 Môn học"
+              parent="menu_univ_sms_master"
+              action="action_univ_sms_subject"
+              sequence="40"/>
+
+    <!-- Academic Period Menu -->
+    <menuitem id="menu_univ_sms_period"
+              name="⏳ Thời gian học"
+              parent="menu_univ_sms_root"
+              sequence="20"/>
+
+    <menuitem id="menu_univ_sms_academic_year"
+              name="📅 Năm học"
+              parent="menu_univ_sms_period"
+              action="action_univ_sms_academic_year"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_term"
+              name="📆 Học kỳ"
+              parent="menu_univ_sms_period"
+              action="action_univ_sms_term"
+              sequence="20"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_univ_sms_config"
+              name="⚙️ Cấu hình"
+              parent="menu_univ_sms_root"
+              groups="univ_sms_base.group_univ_admin"
+              sequence="90"/>
+</odoo>

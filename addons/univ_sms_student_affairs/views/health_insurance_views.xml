@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_health_insurance_tree" model="ir.ui.view">
+        <field name="name">univ.sms.health.insurance.tree</field>
+        <field name="model">univ.sms.health.insurance</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="insurance_code"/>
+                <field name="issue_place_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="payment_state" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_health_insurance_form" model="ir.ui.view">
+        <field name="name">univ.sms.health.insurance.form</field>
+        <field name="model">univ.sms.health.insurance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Xác nhận"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_draft" type="object" string="Đặt lại nháp"
+                            invisible="state != 'confirmed'" class="btn-default"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="insurance_code"/>
+                            <field name="issue_place_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="payment_state"/>
+                            <field name="is_expired"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_health_insurance" model="ir.actions.act_window">
+        <field name="name">Bảo hiểm y tế</field>
+        <field name="res_model">univ.sms.health.insurance</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

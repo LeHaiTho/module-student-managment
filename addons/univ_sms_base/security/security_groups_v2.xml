@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Additional Security Groups from Expanded Spec (Phase 6+) -->
+    <record id="group_univ_finance_office" model="res.groups">
+        <field name="name">Phòng Tài chính - Kế toán</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_lecturer'))]"/>
+    </record>
+
+    <record id="group_univ_student_affairs_office" model="res.groups">
+        <field name="name">Phòng Công tác Sinh viên</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_lecturer'))]"/>
+    </record>
+
+    <record id="group_univ_dean" model="res.groups">
+        <field name="name">Trưởng Khoa</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_lecturer'))]"/>
+    </record>
+
+    <record id="group_univ_advisor" model="res.groups">
+        <field name="name">Cố vấn học tập</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_lecturer'))]"/>
+    </record>
+    <record id="group_univ_admin" model="res.groups">
+        <field name="implied_ids" eval="[
+            (4, ref('group_univ_academic_officer')),
+            (4, ref('group_univ_finance_office')),
+            (4, ref('group_univ_student_affairs_office')),
+            (4, ref('group_univ_dean')),
+            (4, ref('group_univ_advisor'))
+        ]"/>
+    </record>
+</odoo>

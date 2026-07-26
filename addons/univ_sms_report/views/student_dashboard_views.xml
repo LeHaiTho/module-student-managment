@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_student_graph" model="ir.ui.view">
+        <field name="name">univ.sms.student.graph</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <graph string="Sinh viên theo trạng thái" type="bar">
+                <field name="state" type="row"/>
+                <field name="program_id" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_student_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.student.pivot</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân bổ sinh viên">
+                <field name="program_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_student_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Sinh viên</field>
+        <field name="res_model">univ.sms.student</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Record Rule: Giảng viên chỉ xem danh sách đăng ký lớp mình dạy (chỉ restrict READ) -->
+    <record id="rule_student_lecturer_own_class" model="ir.rule">
+        <field name="name">Lecturer: only own class students (read only)</field>
+        <field name="model_id" ref="univ_sms_student.model_univ_sms_enrollment"/>
+        <field name="domain_force">[('class_id.lecturer_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_lecturer'))]"/>
+        <field name="perm_read">1</field>
+    </record>
+
+    <!-- Record Rule: Admin/Officer không bị giới hạn domain (toàn quyền) -->
+    <record id="rule_enrollment_admin_all" model="ir.rule">
+        <field name="name">Admin/Officer: full access to enrollments</field>
+        <field name="model_id" ref="univ_sms_student.model_univ_sms_enrollment"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_academic_officer'))]"/>
+    </record>
+
+    <!-- Record Rule: Sinh viên portal chỉ xem điểm danh của bản thân -->
+    <record id="rule_attendance_portal_own" model="ir.rule">
+        <field name="name">Portal: student sees only own attendance</field>
+        <field name="model_id" ref="model_univ_sms_attendance_line"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_survey_response_tree" model="ir.ui.view">
+        <field name="name">univ.sms.survey.response.tree</field>
+        <field name="model">univ.sms.survey.response</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="survey_instance_id"/>
+                <field name="response_date"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_survey_response_form" model="ir.ui.view">
+        <field name="name">univ.sms.survey.response.form</field>
+        <field name="model">univ.sms.survey.response</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Gửi"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="survey_instance_id" options="{'no_create': True}"/>
+                            <field name="response_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="answer_data" nolabel="1" placeholder="Nhập nội dung phản hồi..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_survey_response" model="ir.actions.act_window">
+        <field name="name">Phản hồi khảo sát</field>
+        <field name="res_model">univ.sms.survey.response</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 6 - Thông báo -->
+    <menuitem id="menu_notification_root" name="📢 Thông báo"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="50"/>
+
+    <menuitem id="menu_notification" name="📢 Danh sách thông báo"
+              parent="menu_notification_root"
+              action="action_notification"
+              sequence="10"/>
+</odoo>

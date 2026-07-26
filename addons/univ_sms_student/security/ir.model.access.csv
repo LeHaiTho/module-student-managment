@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_univ_sms_student_admin,student.admin,model_univ_sms_student,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_student_officer,student.officer,model_univ_sms_student,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_student_lecturer,student.lecturer,model_univ_sms_student,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_enrollment_admin,enrollment.admin,model_univ_sms_enrollment,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_enrollment_officer,enrollment.officer,model_univ_sms_enrollment,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_enrollment_lecturer,enrollment.lecturer,model_univ_sms_enrollment,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_enrollment_portal,enrollment.portal,model_univ_sms_enrollment,base.group_portal,1,0,0,0
+access_univ_sms_home_class_admin,home_class.admin,model_univ_sms_home_class,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_home_class_officer,home_class.officer,model_univ_sms_home_class,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_home_class_lecturer,home_class.lecturer,model_univ_sms_home_class,univ_sms_base.group_univ_lecturer,1,0,0,0

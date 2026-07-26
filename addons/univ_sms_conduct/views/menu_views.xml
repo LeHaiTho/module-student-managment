@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 7 - Rèn luyện -->
+    <menuitem id="menu_conduct_root" name="🏆 Rèn luyện"
+              parent="univ_sms_base.menu_univ_sms_root" sequence="80"/>
+
+    <menuitem id="menu_conduct_criteria"
+              name="📋 Tiêu chí rèn luyện" parent="menu_conduct_root"
+              action="action_conduct_criteria" sequence="10"/>
+
+    <menuitem id="menu_conduct_score"
+              name="💯 Điểm rèn luyện" parent="menu_conduct_root"
+              action="action_conduct_score" sequence="20"/>
+</odoo>

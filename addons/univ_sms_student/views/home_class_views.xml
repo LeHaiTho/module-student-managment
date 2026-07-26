@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_univ_sms_home_class_form" model="ir.ui.view">
+        <field name="name">univ.sms.home.class.form</field>
+        <field name="model">univ.sms.home.class</field>
+        <field name="arch" type="xml">
+            <form string="Lớp hành chính">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-users" type="object"
+                                name="action_view_students">
+                            <field name="student_count" widget="statinfo" string="Sinh viên"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="code"/>
+                        <h1><field name="code" placeholder="Mã lớp (VD: 24CNTT01)"/></h1>
+                        <label for="name"/>
+                        <h2><field name="name" placeholder="Tên lớp hành chính"/></h2>
+                    </div>
+                    <group>
+                        <group string="Thông tin lớp">
+                            <field name="program_id"/>
+                            <field name="academic_year_id"/>
+                        </group>
+                        <group string="Quản lý">
+                            <field name="advisor_id"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Danh sách sinh viên" name="students">
+                            <field name="student_ids" readonly="1">
+                                <tree>
+                                    <field name="student_code"/>
+                                    <field name="name"/>
+                                    <field name="gender"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'studying'"
+                                           decoration-success="state == 'graduated'"
+                                           decoration-warning="state == 'on_leave'"
+                                           decoration-danger="state in ('dropped','dismissed')"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_home_class_tree" model="ir.ui.view">
+        <field name="name">univ.sms.home.class.tree</field>
+        <field name="model">univ.sms.home.class</field>
+        <field name="arch" type="xml">
+            <tree string="Lớp hành chính">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="program_id"/>
+                <field name="academic_year_id"/>
+                <field name="advisor_id"/>
+                <field name="student_count"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_home_class_search" model="ir.ui.view">
+        <field name="name">univ.sms.home.class.search</field>
+        <field name="model">univ.sms.home.class</field>
+        <field name="arch" type="xml">
+            <search string="Tìm lớp hành chính">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="program_id"/>
+                <field name="advisor_id"/>
+                <filter name="active" string="Đang hoạt động" domain="[('active','=',True)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_program" string="Ngành" context="{'group_by': 'program_id'}"/>
+                    <filter name="group_year" string="Niên khóa" context="{'group_by': 'academic_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_home_class" model="ir.actions.act_window">
+        <field name="name">Lớp hành chính</field>
+        <field name="res_model">univ.sms.home.class</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">Thêm lớp hành chính đầu tiên</p>
+        </field>
+    </record>
+</odoo>

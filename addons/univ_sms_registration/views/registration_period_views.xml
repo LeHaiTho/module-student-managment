@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_registration_period_tree" model="ir.ui.view">
+        <field name="name">univ.sms.registration.period.tree</field>
+        <field name="model">univ.sms.registration.period</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="term_id"/>
+                <field name="reg_type"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state"/>
+                <field name="min_credit"/>
+                <field name="max_credit"/>
+            </tree>
+        </field>
+    </record>
+
+        <record id="view_registration_period_form" model="ir.ui.view">
+        <field name="name">univ.sms.registration.period.form</field>
+        <field name="model">univ.sms.registration.period</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open" type="object" string="Mở đăng ký"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_close" type="object" string="Đóng đăng ký"
+                            invisible="state != 'open'" class="btn-danger"/>
+                    <button name="action_draft" type="object" string="Đặt lại nháp"
+                            invisible="state != 'closed'" class="btn-default"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="term_id" options="{'no_create': True}"/>
+                            <field name="reg_type"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Giới hạn tín chỉ">
+                            <group>
+                                <field name="min_credit"/>
+                                <field name="max_credit"/>
+                            </group>
+                        </page>
+                        <page string="Ghi chú">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_registration_period_search" model="ir.ui.view">
+        <field name="name">univ.sms.registration.period.search</field>
+        <field name="model">univ.sms.registration.period</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="term_id"/>
+                <filter name="reg_regular" string="DKMH" domain="[('reg_type','=','regular')]"/>
+                <filter name="reg_elective" string="DKMNV" domain="[('reg_type','=','elective')]"/>
+                <separator/>
+                <filter name="state_open" string="Đang mở" domain="[('state','=','open')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_term" string="Học kỳ" context="{'group_by':'term_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_registration_period" model="ir.actions.act_window">
+        <field name="name">Đợt đăng ký môn</field>
+        <field name="res_model">univ.sms.registration.period</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_registration_period_search"/>
+    </record>
+</odoo>

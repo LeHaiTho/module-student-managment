@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_attendance_sheet" model="ir.actions.report">
+        <field name="name">Bảng điểm danh lớp</field>
+        <field name="model">univ.sms.attendance.sheet</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">univ_sms_report.report_attendance_sheet_template</field>
+        <field name="report_file">univ_sms_report.report_attendance_sheet_template</field>
+        <field name="print_report_name">'Bang_diem_danh_%s' % (object.class_id.name)</field>
+        <field name="binding_model_id" ref="univ_sms_attendance.model_univ_sms_attendance_sheet"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_attendance_sheet_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center mb-4">
+                            <h2>BẢNG ĐIỂM DANH</h2>
+                            <p>Lớp: <span t-field="doc.class_id.name"/></p>
+                            <p>Ngày: <span t-field="doc.attendance_date"/></p>
+                        </div>
+
+                        <t t-set="lines" t-value="doc.line_ids"/>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Họ tên</th>
+                                    <th>MSSV</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="lines" t-as="line">
+                                    <td><span t-esc="line_index + 1"/></td>
+                                    <td><span t-field="line.student_id.name"/></td>
+                                    <td><span t-field="line.student_id.student_code"/></td>
+                                    <td><span t-field="line.state"/></td>
+                                    <td><span t-field="line.note"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

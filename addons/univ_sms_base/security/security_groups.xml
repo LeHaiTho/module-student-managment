@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="module_category_university" model="ir.module.category">
+        <field name="name">University SMS</field>
+    </record>
+
+    <record id="group_univ_lecturer" model="res.groups">
+        <field name="name">Giảng viên</field>
+        <field name="category_id" ref="module_category_university"/>
+    </record>
+
+    <record id="group_univ_academic_officer" model="res.groups">
+        <field name="name">Cán bộ Phòng đào tạo</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_lecturer'))]"/>
+    </record>
+
+    <record id="group_univ_admin" model="res.groups">
+        <field name="name">Quản trị viên SMS</field>
+        <field name="category_id" ref="module_category_university"/>
+        <field name="implied_ids" eval="[(4, ref('group_univ_academic_officer'))]"/>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+{
+    'name': 'University SMS - Student',
+    'version': '17.0.2.0.0',
+    'category': 'Education',
+    'summary': 'Quản lý hồ sơ sinh viên, lớp hành chính và đăng ký học',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': ['univ_sms_base', 'mail'],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/security_rules.xml',
+        'data/sequence_data.xml',
+        'data/admin_user_data.xml',
+        'views/home_class_views.xml',
+        'views/enrollment_views.xml',
+        'views/student_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

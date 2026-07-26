@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_conduct_score" model="ir.actions.report">
+        <field name="name">Phiếu điểm rèn luyện</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">univ_sms_report.report_conduct_score_template</field>
+        <field name="report_file">univ_sms_report.report_conduct_score_template</field>
+        <field name="print_report_name">'Phieu_diem_ren_luyen_%s' % (object.student_id.student_code)</field>
+        <field name="binding_model_id" ref="univ_sms_conduct.model_univ_sms_conduct_score"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_conduct_score_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="text-center mb-4">
+                            <h2>PHIẾU ĐIỂM RÈN LUYỆN</h2>
+                            <p>Học kỳ: <span t-field="doc.period_id.name"/></p>
+                        </div>
+                        <div class="row mt-4 mb-4">
+                            <div class="col-6">
+                                <strong>Họ tên: </strong> <span t-field="doc.student_id.name"/><br/>
+                                <strong>MSSV: </strong> <span t-field="doc.student_id.student_code"/><br/>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>Phân loại: </strong> <span t-field="doc.classification"/><br/>
+                                <strong>Ngày in: </strong> <span t-esc="datetime.datetime.now().strftime('%d/%m/%Y')"/><br/>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tiêu chí</th>
+                                    <th>Tự chấm</th>
+                                    <th>CVHT duyệt</th>
+                                    <th>Điểm cuối</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><span t-esc="line.criteria_id.name"/></td>
+                                    <td><span t-field="line.self_score"/></td>
+                                    <td><span t-field="line.advisor_score"/></td>
+                                    <td><span t-field="line.final_score"/></td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-bold">
+                                    <td colspan="2">TỔNG ĐIỂM</td>
+                                    <td><span t-field="doc.self_total"/></td>
+                                    <td><span t-field="doc.advisor_total"/></td>
+                                    <td><span t-field="doc.final_total"/></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

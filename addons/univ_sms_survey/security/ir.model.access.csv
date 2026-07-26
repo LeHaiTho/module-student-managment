@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_survey_type_admin,survey.type.admin,model_univ_sms_survey_type,univ_sms_base.group_univ_admin,1,1,1,1
+access_survey_type_officer,survey.type.officer,model_univ_sms_survey_type,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_survey_instance_admin,survey.instance.admin,model_univ_sms_survey_instance,univ_sms_base.group_univ_admin,1,1,1,1
+access_survey_instance_officer,survey.instance.officer,model_univ_sms_survey_instance,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_survey_response_admin,survey.response.admin,model_univ_sms_survey_response,univ_sms_base.group_univ_admin,1,1,1,1
+access_survey_response_officer,survey.response.officer,model_univ_sms_survey_response,univ_sms_base.group_univ_student_affairs_office,1,1,0,0
+access_survey_response_student,survey.response.student,model_univ_sms_survey_response,base.group_portal,1,1,1,0

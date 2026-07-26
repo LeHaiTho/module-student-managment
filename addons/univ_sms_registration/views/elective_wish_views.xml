@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_elective_wish_tree" model="ir.ui.view">
+        <field name="name">univ.sms.elective.wish.tree</field>
+        <field name="model">univ.sms.elective.wish</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="offering_id"/>
+                <field name="priority"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_elective_wish_form" model="ir.ui.view">
+        <field name="name">univ.sms.elective.wish.form</field>
+        <field name="model">univ.sms.elective.wish</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="offering_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="priority"/>
+                            <field name="state" widget="statusbar"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_elective_wish" model="ir.actions.act_window">
+        <field name="name">Đăng ký nguyện vọng</field>
+        <field name="res_model">univ.sms.elective.wish</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ==========================================
+             GIẢNG VIÊN (lecturer)
+             ========================================== -->
+        <record id="demo_lecturer_partner" model="res.partner">
+            <field name="name">Nguyễn Văn A (Giảng viên)</field>
+            <field name="email">giangvien@univ.edu.vn</field>
+        </record>
+        <record id="demo_lecturer_user" model="res.users">
+            <field name="partner_id" ref="demo_lecturer_partner"/>
+            <field name="login">giangvien</field>
+            <field name="password">giangvien</field>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('univ_sms_base.group_univ_lecturer'))]"/>
+        </record>
+
+        <!-- ==========================================
+             CÁN BỘ PHÒNG ĐÀO TẠO (academic officer)
+             ========================================== -->
+        <record id="demo_officer_partner" model="res.partner">
+            <field name="name">Trần Thị B (Phòng Đào tạo)</field>
+            <field name="email">phongdaotao@univ.edu.vn</field>
+        </record>
+        <record id="demo_officer_user" model="res.users">
+            <field name="partner_id" ref="demo_officer_partner"/>
+            <field name="login">phongdaotao</field>
+            <field name="password">phongdaotao</field>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('univ_sms_base.group_univ_academic_officer'))]"/>
+        </record>
+
+        <!-- ==========================================
+             SINH VIÊN (portal user)
+             ========================================== -->
+        <record id="demo_student_partner" model="res.partner">
+            <field name="name">Lê Văn C (Sinh viên)</field>
+            <field name="email">sinhvien@univ.edu.vn</field>
+        </record>
+        <record id="demo_student_user" model="res.users">
+            <field name="partner_id" ref="demo_student_partner"/>
+            <field name="login">sinhvien</field>
+            <field name="password">sinhvien</field>
+            <field name="groups_id" eval="[(4, ref('base.group_portal'))]"/>
+        </record>
+
+        <!-- ==========================================
+             CỐ VẤN HỌC TẬP (advisor)
+             ========================================== -->
+        <record id="demo_advisor_partner" model="res.partner">
+            <field name="name">Phạm Văn D (Cố vấn HT)</field>
+            <field name="email">covanht@univ.edu.vn</field>
+        </record>
+        <record id="demo_advisor_user" model="res.users">
+            <field name="partner_id" ref="demo_advisor_partner"/>
+            <field name="login">covanht</field>
+            <field name="password">covanht</field>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('univ_sms_base.group_univ_advisor'))]"/>
+        </record>
+
+        <!-- ==========================================
+             TRƯỞNG KHOA (dean)
+             ========================================== -->
+        <record id="demo_dean_partner" model="res.partner">
+            <field name="name">Hoàng Thị E (Trưởng khoa)</field>
+            <field name="email">truongkhoa@univ.edu.vn</field>
+        </record>
+        <record id="demo_dean_user" model="res.users">
+            <field name="partner_id" ref="demo_dean_partner"/>
+            <field name="login">truongkhoa</field>
+            <field name="password">truongkhoa</field>
+            <field name="groups_id" eval="[(4, ref('base.group_user')), (4, ref('univ_sms_base.group_univ_dean'))]"/>
+        </record>
+    </data>
+</odoo>

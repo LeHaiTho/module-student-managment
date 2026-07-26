@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Class Management Menu -->
+    <menuitem id="menu_univ_sms_class_mgmt"
+              name="🏫 Lớp học"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="18"/>
+
+    <menuitem id="menu_univ_sms_class_list"
+              name="🏫 Danh sách lớp"
+              parent="menu_univ_sms_class_mgmt"
+              action="action_univ_sms_class"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_timetable_list"
+              name="📅 Thời khóa biểu"
+              parent="menu_univ_sms_class_mgmt"
+              action="action_univ_sms_timetable"
+              sequence="20"/>
+</odoo>

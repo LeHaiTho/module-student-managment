@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_notification_admin,notification.admin,model_univ_sms_notification,univ_sms_base.group_univ_admin,1,1,1,1
+access_notification_officer,notification.officer,model_univ_sms_notification,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_notification_student_affairs,notification.student_affairs,model_univ_sms_notification,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_notification_finance,notification.finance,model_univ_sms_notification,univ_sms_base.group_univ_finance_office,1,1,1,0
+access_notification_portal,notification.portal,model_univ_sms_notification,base.group_portal,1,0,0,0

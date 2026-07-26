@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Gán user admin (base.user_root + base.user_admin) vào group Quản trị viên SMS -->
+        <record id="base.user_root" model="res.users">
+            <field name="groups_id" eval="[(4, ref('univ_sms_base.group_univ_admin'))]"/>
+        </record>
+        <record id="base.user_admin" model="res.users">
+            <field name="groups_id" eval="[(4, ref('univ_sms_base.group_univ_admin'))]"/>
+        </record>
+    </data>
+</odoo>

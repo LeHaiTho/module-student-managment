@@ -1,0 +1,3 @@
+PhaseModuleOutput chínhĐiều kiện bắt đầu0SetupDocker env, repo structure—1univ_sms_base + univ_sms_studentMaster data, hồ sơ SV, security groupsTrả lời OPEN_Q1, Q2, Q82univ_sms_class + univ_sms_attendanceLớp, TKB, điểm danhPhase 1 done3univ_sms_exam + univ_sms_feeĐiểm số, học phí (tích hợp account)Trả lời OPEN_Q3, Q44univ_sms_portalCổng tra cứu sinh viênTrả lời OPEN_Q5, Q6 + Phase 1-3 done5univ_sms_reportQWeb PDF: bảng điểm, hóa đơnPhase 3-4 done
+
+✅ Phase 1 (base+student) + Phase 2 (class+attendance) + Phase 3 (exam+fee) complete. 6 modules installed. Next: Phase 4 (univ_sms_portal).

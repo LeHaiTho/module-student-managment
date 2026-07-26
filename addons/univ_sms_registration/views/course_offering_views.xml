@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_course_offering_tree" model="ir.ui.view">
+        <field name="name">univ.sms.course.offering.tree</field>
+        <field name="model">univ.sms.course.offering</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="subject_id"/>
+                <field name="term_id"/>
+                <field name="lecturer_id"/>
+                <field name="class_id"/>
+                <field name="max_seats"/>
+                <field name="registered_count"/>
+                <field name="available_seats"/>
+                <field name="is_full" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_course_offering_form" model="ir.ui.view">
+        <field name="name">univ.sms.course.offering.form</field>
+        <field name="model">univ.sms.course.offering</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="subject_id" options="{'no_create': True}"/>
+                            <field name="term_id" options="{'no_create': True}"/>
+                            <field name="lecturer_id"/>
+                        </group>
+                        <group>
+                            <field name="class_id"/>
+                            <field name="max_seats"/>
+                            <field name="registered_count" readonly="1"/>
+                            <field name="available_seats" readonly="1"/>
+                            <field name="is_full" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Môn tiên quyết">
+                            <field name="prerequisite_subject_ids" readonly="1" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_course_offering_search" model="ir.ui.view">
+        <field name="name">univ.sms.course.offering.search</field>
+        <field name="model">univ.sms.course.offering</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="subject_id"/>
+                <field name="term_id"/>
+                <field name="lecturer_id"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_term" string="Học kỳ" context="{'group_by':'term_id'}"/>
+                    <filter name="group_subject" string="Môn học" context="{'group_by':'subject_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_course_offering" model="ir.actions.act_window">
+        <field name="name">Lớp môn học</field>
+        <field name="res_model">univ.sms.course.offering</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_course_offering_search"/>
+    </record>
+</odoo>

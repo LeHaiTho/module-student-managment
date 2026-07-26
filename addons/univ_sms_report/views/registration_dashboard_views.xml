@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_registration_graph" model="ir.ui.view">
+        <field name="name">univ.sms.registration.graph</field>
+        <field name="model">univ.sms.registration</field>
+        <field name="arch" type="xml">
+            <graph string="Đăng ký môn theo thời gian" type="bar">
+                <field name="period_id" type="row"/>
+                <field name="state" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_registration_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.registration.pivot</field>
+        <field name="model">univ.sms.registration</field>
+        <field name="arch" type="xml">
+            <pivot string="Thống kê đăng ký">
+                <field name="student_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_registration_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Đăng ký môn</field>
+        <field name="res_model">univ.sms.registration</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

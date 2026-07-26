@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_notification_tree" model="ir.ui.view">
+        <field name="name">univ.sms.notification.tree</field>
+        <field name="model">univ.sms.notification</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="title"/>
+                <field name="publish_date"/>
+                <field name="target_audience"/>
+                <field name="is_pinned"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_notification_form" model="ir.ui.view">
+        <field name="name">univ.sms.notification.form</field>
+        <field name="model">univ.sms.notification</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_publish" type="object" string="Đăng"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_archive" type="object" string="Lưu trữ"
+                            invisible="state != 'published'" class="btn-secondary"/>
+                    <button name="action_draft" type="object" string="Mở lại"
+                            invisible="state != 'archived'" class="btn-default"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="title"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="publish_date"/>
+                            <field name="expire_date"/>
+                            <field name="is_pinned"/>
+                        </group>
+                        <group>
+                            <field name="target_audience"/>
+                            <field name="program_ids" widget="many2many_tags"
+                                   invisible="target_audience != 'program'" required="target_audience == 'program'"/>
+                            <field name="class_ids" widget="many2many_tags"
+                                   invisible="target_audience != 'class'" required="target_audience == 'class'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Nội dung">
+                            <field name="content" nolabel="1"/>
+                        </page>
+                        <page string="Tệp đính kèm">
+                            <field name="attachment_ids" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_notification_search" model="ir.ui.view">
+        <field name="name">univ.sms.notification.search</field>
+        <field name="model">univ.sms.notification</field>
+        <field name="arch" type="xml">
+            <search string="Tìm thông báo">
+                <field name="title" string="Tiêu đề"/>
+                <field name="target_audience" string="Đối tượng"/>
+                <separator/>
+                <filter name="published" string="Đã đăng" domain="[('state','=','published')]"/>
+                <filter name="draft" string="Bản nháp" domain="[('state','=','draft')]"/>
+                <filter name="pinned" string="Được ghim" domain="[('is_pinned','=',True)]"/>
+                <filter name="not_expired" string="Còn hiệu lực"
+                        domain="['|',('expire_date','=',False),('expire_date','&gt;=',context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="to_all" string="Toàn trường" domain="[('target_audience','=','all')]"/>
+                <filter name="to_program" string="Theo ngành" domain="[('target_audience','=','program')]"/>
+                <filter name="to_class" string="Theo lớp" domain="[('target_audience','=','class')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                    <filter name="group_audience" string="Đối tượng" context="{'group_by':'target_audience'}"/>
+                    <filter name="group_date" string="Ngày đăng" context="{'group_by':'publish_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_notification" model="ir.actions.act_window">
+        <field name="name">Thông báo</field>
+        <field name="res_model">univ.sms.notification</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_notification_search"/>
+        <field name="context">{'search_default_published': 1}</field>
+    </record>
+</odoo>

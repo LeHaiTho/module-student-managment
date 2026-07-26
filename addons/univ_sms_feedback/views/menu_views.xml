@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 6 - Góp ý -->
+    <menuitem id="menu_feedback_root" name="💬 Góp ý"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="60"/>
+
+    <menuitem id="menu_feedback" name="💬 Phản hồi &amp; Góp ý"
+              parent="menu_feedback_root"
+              action="action_feedback"
+              sequence="10"/>
+</odoo>

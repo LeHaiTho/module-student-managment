@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_univ_sms_class_admin,class.admin,model_univ_sms_class,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_class_officer,class.officer,model_univ_sms_class,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_class_lecturer,class.lecturer,model_univ_sms_class,univ_sms_base.group_univ_lecturer,1,0,0,0
+access_univ_sms_timetable_admin,timetable.admin,model_univ_sms_timetable,univ_sms_base.group_univ_admin,1,1,1,1
+access_univ_sms_timetable_officer,timetable.officer,model_univ_sms_timetable,univ_sms_base.group_univ_academic_officer,1,1,1,0
+access_univ_sms_timetable_lecturer,timetable.lecturer,model_univ_sms_timetable,univ_sms_base.group_univ_lecturer,1,1,1,0
+access_univ_sms_timetable_portal,timetable.portal,model_univ_sms_timetable,base.group_portal,1,0,0,0

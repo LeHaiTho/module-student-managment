@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_survey_instance_tree" model="ir.ui.view">
+        <field name="name">univ.sms.survey.instance.tree</field>
+        <field name="model">univ.sms.survey.instance</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="survey_type_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="response_count"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_survey_instance_form" model="ir.ui.view">
+        <field name="name">univ.sms.survey.instance.form</field>
+        <field name="model">univ.sms.survey.instance</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_open" type="object" string="Mở"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_close" type="object" string="Đóng"
+                            invisible="state != 'open'" class="btn-danger"/>
+                    <button name="action_draft" type="object" string="Soạn thảo"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="survey_type_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="response_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Phản hồi">
+                            <field name="response_ids" nolabel="1">
+                                <tree>
+                                    <field name="student_id"/>
+                                    <field name="response_date"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_survey_instance_search" model="ir.ui.view">
+        <field name="name">univ.sms.survey.instance.search</field>
+        <field name="model">univ.sms.survey.instance</field>
+        <field name="arch" type="xml">
+            <search string="Tìm khảo sát">
+                <field name="name" string="Tên đợt khảo sát"/>
+                <field name="survey_type_id" string="Loại khảo sát"/>
+                <separator/>
+                <filter name="open" string="Đang mở" domain="[('state','=','open')]"/>
+                <filter name="draft" string="Soạn thảo" domain="[('state','=','draft')]"/>
+                <filter name="closed" string="Đã đóng" domain="[('state','=','closed')]"/>
+                <filter name="active_period" string="Còn hiệu lực"
+                        domain="[('state','=','open'),('date_end','&gt;=',context_today().strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_type" string="Loại khảo sát" context="{'group_by':'survey_type_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                    <filter name="group_month" string="Tháng tạo" context="{'group_by':'create_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_survey_instance" model="ir.actions.act_window">
+        <field name="name">Đợt khảo sát</field>
+        <field name="res_model">univ.sms.survey.instance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_survey_instance_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+    </record>
+</odoo>

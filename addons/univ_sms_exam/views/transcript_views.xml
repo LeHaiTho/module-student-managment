@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_univ_sms_transcript_form" model="ir.ui.view">
+        <field name="name">univ.sms.transcript.form</field>
+        <field name="model">univ.sms.transcript</field>
+        <field name="arch" type="xml">
+            <form string="Bảng điểm">
+                <header>
+                    <button name="action_generate_from_enrollments" type="object"
+                            string="Tạo từ ĐKMH + Tính điểm" class="btn-primary"/>
+                    <button name="action_sync_scores" type="object"
+                            string="Cập nhật điểm từ kết quả thi" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="student_id" placeholder="Sinh viên"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id"/>
+                            <field name="term_id"/>
+                            <field name="program_id"/>
+                        </group>
+                        <group>
+                            <field name="term_gpa" widget="float" digits="[4,2]"/>
+                            <field name="cumulative_gpa" widget="float" digits="[4,2]"/>
+                            <field name="classification"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết điểm">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="subject_id" options="{'no_create': True}"/>
+                                    <field name="credit"/>
+                                    <field name="final_score"/>
+                                    <field name="grade_point"/>
+                                    <field name="grade_letter"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_transcript_tree" model="ir.ui.view">
+        <field name="name">univ.sms.transcript.tree</field>
+        <field name="model">univ.sms.transcript</field>
+        <field name="arch" type="xml">
+            <tree string="Bảng điểm">
+                <field name="student_id"/>
+                <field name="term_id"/>
+                <field name="program_id"/>
+                <field name="term_gpa"/>
+                <field name="cumulative_gpa"/>
+                <field name="classification"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_transcript_search" model="ir.ui.view">
+        <field name="name">univ.sms.transcript.search</field>
+        <field name="model">univ.sms.transcript</field>
+        <field name="arch" type="xml">
+            <search string="Tìm bảng điểm">
+                <field name="student_id"/>
+                <field name="term_id"/>
+                <field name="program_id"/>
+                <filter name="excellent" string="Xuất sắc" domain="[('classification', '=', 'excellent')]"/>
+                <filter name="very_good" string="Giỏi" domain="[('classification', '=', 'very_good')]"/>
+                <filter name="good" string="Khá" domain="[('classification', '=', 'good')]"/>
+                <filter name="fail" string="Kém" domain="[('classification', '=', 'fail')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_by_student" string="Sinh viên" context="{'group_by': 'student_id'}"/>
+                    <filter name="group_by_term" string="Học kỳ" context="{'group_by': 'term_id'}"/>
+                    <filter name="group_by_program" string="Ngành" context="{'group_by': 'program_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_transcript" model="ir.actions.act_window">
+        <field name="name">Bảng điểm</field>
+        <field name="res_model">univ.sms.transcript</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

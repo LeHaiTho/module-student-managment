@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_conduct_score_tree" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.score.tree</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="period_id"/>
+                <field name="self_total"/>
+                <field name="advisor_total"/>
+                <field name="final_total"/>
+                <field name="classification" widget="badge"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_conduct_score_form" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.score.form</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Gửi"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_advisor_approve" type="object" string="CVHT duyệt"
+                            invisible="state != 'submitted'" class="btn-success"/>
+                    <button name="action_dean_approve" type="object" string="Khoa duyệt"
+                            invisible="state != 'advisor_approved'" class="btn-success"/>
+                    <button name="action_reject" type="object" string="Trả về"
+                            invisible="state not in ('submitted', 'advisor_approved')"
+                            class="btn-danger"/>
+                    <button name="action_draft" type="object" string="Đặt lại nháp"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="period_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="self_total" readonly="1"/>
+                            <field name="advisor_total" readonly="1"/>
+                            <field name="final_total" readonly="1"/>
+                            <field name="classification" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết điểm theo tiêu chí">
+                            <field name="line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="criteria_id"/>
+                                    <field name="self_score"/>
+                                    <field name="advisor_score"/>
+                                    <field name="final_score"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_conduct_score_search" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.score.search</field>
+        <field name="model">univ.sms.conduct.score</field>
+        <field name="arch" type="xml">
+            <search string="Tìm điểm rèn luyện">
+                <field name="student_id" string="Sinh viên"/>
+                <field name="period_id" string="Học kỳ"/>
+                <separator/>
+                <filter name="draft" string="Đang chấm" domain="[('state','=','draft')]"/>
+                <filter name="submitted" string="Đã gửi" domain="[('state','=','submitted')]"/>
+                <filter name="advisor_approved" string="CVHT đã duyệt" domain="[('state','=','advisor_approved')]"/>
+                <filter name="dean_approved" string="Khoa đã duyệt" domain="[('state','=','dean_approved')]"/>
+                <separator/>
+                <filter name="excellent" string="Xuất sắc" domain="[('classification','=','excellent')]"/>
+                <filter name="good" string="Tốt" domain="[('classification','=','good')]"/>
+                <filter name="weak_poor" string="Yếu/Kém" domain="[('classification','in',['weak','poor'])]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_student" string="Sinh viên" context="{'group_by':'student_id'}"/>
+                    <filter name="group_period" string="Học kỳ" context="{'group_by':'period_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                    <filter name="group_class" string="Xếp loại" context="{'group_by':'classification'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_conduct_score" model="ir.actions.act_window">
+        <field name="name">Điểm rèn luyện</field>
+        <field name="res_model">univ.sms.conduct.score</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_conduct_score_search"/>
+        <field name="context">{'search_default_draft': 1}</field>
+    </record>
+</odoo>

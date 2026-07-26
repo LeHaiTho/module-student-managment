@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_survey_type_tree" model="ir.ui.view">
+        <field name="name">univ.sms.survey.type.tree</field>
+        <field name="model">univ.sms.survey.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_survey_type_form" model="ir.ui.view">
+        <field name="name">univ.sms.survey.type.form</field>
+        <field name="model">univ.sms.survey.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_survey_type" model="ir.actions.act_window">
+        <field name="name">Loại khảo sát</field>
+        <field name="res_model">univ.sms.survey.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

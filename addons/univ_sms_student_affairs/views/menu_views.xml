@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 7 - Công tác SV -->
+    <menuitem id="menu_student_affairs_root" name="🤝 Công tác SV"
+              parent="univ_sms_base.menu_univ_sms_root" sequence="70"/>
+
+    <menuitem id="menu_student_affairs_health_insurance"
+              name="🏥 Bảo hiểm y tế" parent="menu_student_affairs_root"
+              action="action_health_insurance" sequence="10"/>
+
+    <menuitem id="menu_student_affairs_residence"
+              name="🏠 Thông tin ngoại trú" parent="menu_student_affairs_root"
+              action="action_residence_info" sequence="20"/>
+
+    <menuitem id="menu_student_affairs_military"
+              name="🎖️ Nghĩa vụ quân sự" parent="menu_student_affairs_root"
+              action="action_military_service" sequence="30"/>
+</odoo>

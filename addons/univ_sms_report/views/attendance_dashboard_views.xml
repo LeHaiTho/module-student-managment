@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_attendance_sheet_graph" model="ir.ui.view">
+        <field name="name">univ.sms.attendance.sheet.graph</field>
+        <field name="model">univ.sms.attendance.sheet</field>
+        <field name="arch" type="xml">
+            <graph string="Phiếu điểm danh theo ngày" type="bar">
+                <field name="attendance_date" type="row"/>
+                <field name="state" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_attendance_sheet_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.attendance.sheet.pivot</field>
+        <field name="model">univ.sms.attendance.sheet</field>
+        <field name="arch" type="xml">
+            <pivot string="Thống kê điểm danh">
+                <field name="class_id" type="row"/>
+                <field name="state" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_attendance_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard Điểm danh</field>
+        <field name="res_model">univ.sms.attendance.sheet</field>
+        <field name="view_mode">graph,pivot,list</field>
+    </record>
+</odoo>

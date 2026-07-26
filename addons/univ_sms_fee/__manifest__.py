@@ -1,0 +1,20 @@
+{
+    'name': 'University SMS - Fee',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Quản lý học phí và hóa đơn sinh viên',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': ['univ_sms_attendance', 'account'],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/security_rules.xml',
+        'data/admin_user_data.xml',
+        'data/fee_data.xml',
+        'views/fee_views.xml',
+        'views/invoice_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

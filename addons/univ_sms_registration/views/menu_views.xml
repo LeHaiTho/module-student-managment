@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 6 - Đăng ký môn -->
+    <menuitem id="menu_registration_root" name="✍️ Đăng ký môn"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="40"/>
+
+    <menuitem id="menu_registration_period" name="📅 Đợt đăng ký"
+              parent="menu_registration_root"
+              action="action_registration_period"
+              sequence="10"/>
+
+    <menuitem id="menu_course_offering" name="🏫 Lớp môn học"
+              parent="menu_registration_root"
+              action="action_course_offering"
+              sequence="20"/>
+
+    <menuitem id="menu_registration" name="📝 Đăng ký môn học"
+              parent="menu_registration_root"
+              action="action_registration"
+              sequence="30"/>
+
+    <menuitem id="menu_elective_wish" name="⭐ Nguyện vọng"
+              parent="menu_registration_root"
+              action="action_elective_wish"
+              sequence="40"/>
+</odoo>

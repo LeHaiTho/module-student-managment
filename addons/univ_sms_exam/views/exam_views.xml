@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_univ_sms_exam_form" model="ir.ui.view">
+        <field name="name">univ.sms.exam.form</field>
+        <field name="model">univ.sms.exam</field>
+        <field name="arch" type="xml">
+            <form string="Kỳ thi">
+                <header>
+                    <button name="action_load_students" type="object" string="Nạp sinh viên" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_start_grading" type="object" string="Bắt đầu chấm" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_done" type="object" string="Hoàn thành" invisible="state != 'in_progress'" class="oe_highlight"/>
+                    <button name="action_reset" type="object" string="Về dự kiến" invisible="state not in ('in_progress', 'done')" groups="univ_sms_base.group_univ_admin"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Tên kỳ thi"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="class_id"/>
+                            <field name="term_id"/>
+                            <field name="subject_id"/>
+                        </group>
+                        <group>
+                            <field name="exam_type"/>
+                            <field name="date"/>
+                            <field name="max_score"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Kết quả">
+                            <field name="result_ids">
+                                <tree editable="bottom">
+                                    <field name="student_id" options="{'no_create': True}"/>
+                                    <field name="score"/>
+                                    <field name="max_score"/>
+                                    <field name="percentage" widget="percentage"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_exam_tree" model="ir.ui.view">
+        <field name="name">univ.sms.exam.tree</field>
+        <field name="model">univ.sms.exam</field>
+        <field name="arch" type="xml">
+            <tree string="Kỳ thi">
+                <field name="name"/>
+                <field name="class_id"/>
+                <field name="subject_id"/>
+                <field name="exam_type"/>
+                <field name="date"/>
+                <field name="max_score"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'in_progress'" decoration-success="state == 'done'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_exam_search" model="ir.ui.view">
+        <field name="name">univ.sms.exam.search</field>
+        <field name="model">univ.sms.exam</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kỳ thi">
+                <field name="name"/>
+                <field name="class_id"/>
+                <field name="subject_id"/>
+                <filter name="midterm" string="Giữa kỳ" domain="[('exam_type', '=', 'midterm')]"/>
+                <filter name="final" string="Cuối kỳ" domain="[('exam_type', '=', 'final')]"/>
+                <separator/>
+                <filter name="draft" string="Dự kiến" domain="[('state', '=', 'draft')]"/>
+                <filter name="in_progress" string="Đang chấm" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="done" string="Hoàn thành" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_by_class" string="Lớp" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_by_type" string="Loại" context="{'group_by': 'exam_type'}"/>
+                    <filter name="group_by_state" string="Trạng thái" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_exam" model="ir.actions.act_window">
+        <field name="name">Kỳ thi</field>
+        <field name="res_model">univ.sms.exam</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

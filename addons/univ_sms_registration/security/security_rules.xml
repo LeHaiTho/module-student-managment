@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rule_registration_portal_own" model="ir.rule">
+        <field name="name">Portal: own course registrations only</field>
+        <field name="model_id" ref="model_univ_sms_registration"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <record id="rule_elective_wish_portal_own" model="ir.rule">
+        <field name="name">Portal: own elective wishes only</field>
+        <field name="model_id" ref="model_univ_sms_elective_wish"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

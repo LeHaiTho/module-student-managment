@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_univ_sms_enrollment_form" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.form</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="arch" type="xml">
+            <form string="Đăng ký học môn">
+                <header>
+                    <button name="action_complete" string="Hoàn thành"
+                            type="object" class="btn-primary"
+                            invisible="state != 'registered'"/>
+                    <button name="action_cancel" string="Hủy"
+                            type="object"
+                            invisible="state != 'registered'"/>
+                    <button name="action_reset" string="Đăng ký lại"
+                            type="object"
+                            invisible="state == 'registered'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="registered,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id"/>
+                            <field name="subject_id"/>
+                        </group>
+                        <group>
+                            <field name="term_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_enrollment_tree" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.tree</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="arch" type="xml">
+            <tree string="Đăng ký học môn"
+                  decoration-success="state == 'completed'"
+                  decoration-muted="state == 'cancelled'">
+                <field name="student_id"/>
+                <field name="subject_id"/>
+                <field name="term_id"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'registered'"
+                       decoration-success="state == 'completed'"
+                       decoration-danger="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_enrollment_search" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.search</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="arch" type="xml">
+            <search string="Tìm đăng ký học">
+                <field name="student_id"/>
+                <field name="subject_id"/>
+                <field name="term_id"/>
+                <separator/>
+                <filter name="registered" string="Đã đăng ký" domain="[('state', '=', 'registered')]"/>
+                <filter name="completed" string="Hoàn thành" domain="[('state', '=', 'completed')]"/>
+                <filter name="cancelled" string="Đã hủy" domain="[('state', '=', 'cancelled')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_student" string="Sinh viên" context="{'group_by': 'student_id'}"/>
+                    <filter name="group_subject" string="Môn học" context="{'group_by': 'subject_id'}"/>
+                    <filter name="group_term" string="Học kỳ" context="{'group_by': 'term_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_enrollment" model="ir.actions.act_window">
+        <field name="name">Đăng ký học</field>
+        <field name="res_model">univ.sms.enrollment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_enrollment_search"/>
+        <field name="context">{'search_default_registered': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Đăng ký học môn cho sinh viên
+            </p>
+        </field>
+    </record>
+</odoo>

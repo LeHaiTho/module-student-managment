@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Attendance Menu -->
+    <menuitem id="menu_univ_sms_attendance"
+              name="✅ Điểm danh"
+              parent="univ_sms_base.menu_univ_sms_root"
+              action="action_univ_sms_attendance_sheet"
+              sequence="25"/>
+</odoo>

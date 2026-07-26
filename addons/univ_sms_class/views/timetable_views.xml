@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View (standalone for reference) -->
+    <record id="view_univ_sms_timetable_tree" model="ir.ui.view">
+        <field name="name">univ.sms.timetable.tree</field>
+        <field name="model">univ.sms.timetable</field>
+        <field name="arch" type="xml">
+            <tree string="Thời khóa biểu" editable="bottom">
+                <field name="class_id"/>
+                <field name="day_of_week"/>
+                <field name="start_time" widget="float_time"/>
+                <field name="end_time" widget="float_time"/>
+                <field name="room"/>
+                <field name="building"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_univ_sms_timetable_form" model="ir.ui.view">
+        <field name="name">univ.sms.timetable.form</field>
+        <field name="model">univ.sms.timetable</field>
+        <field name="arch" type="xml">
+            <form string="Thời khóa biểu">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="class_id"/>
+                            <field name="day_of_week"/>
+                        </group>
+                        <group>
+                            <field name="start_time" widget="float_time"/>
+                            <field name="end_time" widget="float_time"/>
+                            <field name="room"/>
+                            <field name="building"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_timetable_search" model="ir.ui.view">
+        <field name="name">univ.sms.timetable.search</field>
+        <field name="model">univ.sms.timetable</field>
+        <field name="arch" type="xml">
+            <search string="Tìm thời khóa biểu">
+                <field name="class_id"/>
+                <field name="day_of_week"/>
+                <field name="room"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_class" string="Lớp" context="{'group_by': 'class_id'}"/>
+                    <filter name="group_day" string="Thứ" context="{'group_by': 'day_of_week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_timetable" model="ir.actions.act_window">
+        <field name="name">Thời khóa biểu</field>
+        <field name="res_model">univ.sms.timetable</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_timetable_search"/>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Thời khóa biểu được quản lý trong từng lớp học
+            </p>
+        </field>
+    </record>
+</odoo>

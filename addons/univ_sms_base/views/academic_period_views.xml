@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== Academic Year ==================== -->
+
+    <!-- Form View -->
+    <record id="view_univ_sms_academic_year_form" model="ir.ui.view">
+        <field name="name">univ.sms.academic.year.form</field>
+        <field name="model">univ.sms.academic.year</field>
+        <field name="arch" type="xml">
+            <form string="Năm học">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ví dụ: 2025-2026"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Học kỳ" name="terms">
+                            <field name="term_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_academic_year_tree" model="ir.ui.view">
+        <field name="name">univ.sms.academic.year.tree</field>
+        <field name="model">univ.sms.academic.year</field>
+        <field name="arch" type="xml">
+            <tree string="Năm học">
+                <field name="name"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_academic_year" model="ir.actions.act_window">
+        <field name="name">Năm học</field>
+        <field name="res_model">univ.sms.academic.year</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Tạo năm học đầu tiên
+            </p>
+        </field>
+    </record>
+
+    <!-- ==================== Term ==================== -->
+
+    <!-- Form View -->
+    <record id="view_univ_sms_term_form" model="ir.ui.view">
+        <field name="name">univ.sms.term.form</field>
+        <field name="model">univ.sms.term</field>
+        <field name="arch" type="xml">
+            <form string="Học kỳ">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Ví dụ: Học kỳ 1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="academic_year_id"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_term_tree" model="ir.ui.view">
+        <field name="name">univ.sms.term.tree</field>
+        <field name="model">univ.sms.term</field>
+        <field name="arch" type="xml">
+            <tree string="Học kỳ">
+                <field name="name"/>
+                <field name="academic_year_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_term_search" model="ir.ui.view">
+        <field name="name">univ.sms.term.search</field>
+        <field name="model">univ.sms.term</field>
+        <field name="arch" type="xml">
+            <search string="Tìm học kỳ">
+                <field name="name"/>
+                <field name="academic_year_id"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_year" string="Năm học" context="{'group_by': 'academic_year_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_term" model="ir.actions.act_window">
+        <field name="name">Học kỳ</field>
+        <field name="res_model">univ.sms.term</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_term_search"/>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Tạo học kỳ đầu tiên
+            </p>
+        </field>
+    </record>
+</odoo>

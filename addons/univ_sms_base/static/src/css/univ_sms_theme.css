@@ -1,0 +1,174 @@
+/* University SMS Custom Theme */
+:root {
+    --univ-primary: #1a73e8;
+    --univ-secondary: #34a853;
+    --univ-accent: #ea4335;
+    --univ-warning: #fbbc04;
+    --univ-bg: #f8f9fa;
+    --univ-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --univ-radius: 12px;
+}
+
+/* Custom App Icon Badge */
+.o_menu_apps .o_menu_sections .o_menu_section {
+    border-radius: var(--univ-radius);
+}
+
+/* Improve card layout for tree views */
+.o_list_view .table th {
+    background: linear-gradient(135deg, var(--univ-primary), #1557b0);
+    color: white;
+    font-weight: 600;
+}
+
+/* Kanban Improvements */
+.o_kanban_view .o_kanban_record {
+    border-radius: var(--univ-radius);
+    box-shadow: var(--univ-card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    padding: 16px;
+}
+
+.o_kanban_view .o_kanban_record:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Faculty color by code */
+.o_kanban_view .o_kanban_record[data-id] .faculty-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+/* Improved form layout */
+.o_form_view .oe_title h1 {
+    color: var(--univ-primary);
+    border-left: 4px solid var(--univ-primary);
+    padding-left: 12px;
+}
+
+.o_form_view .o_group {
+    background: white;
+    border-radius: var(--univ-radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--univ-card-shadow);
+}
+
+/* Status bar decorations */
+.o_statusbar_status .o_arrow_button.btn-primary {
+    background: var(--univ-primary);
+    border-color: var(--univ-primary);
+}
+
+/* Dashboard cards */
+.dashboard-card {
+    background: white;
+    border-radius: var(--univ-radius);
+    padding: 20px;
+    box-shadow: var(--univ-card-shadow);
+    border-left: 4px solid;
+    margin-bottom: 16px;
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.dashboard-card .card-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.dashboard-card .card-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.dashboard-card .card-label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.dashboard-card.card-primary {
+    border-left-color: var(--univ-primary);
+}
+
+.dashboard-card.card-success {
+    border-left-color: var(--univ-secondary);
+}
+
+.dashboard-card.card-warning {
+    border-left-color: var(--univ-warning);
+}
+
+.dashboard-card.card-danger {
+    border-left-color: var(--univ-accent);
+}
+
+/* Student avatar styling */
+.student-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--univ-primary);
+}
+
+/* Notification badges */
+.badge-univ {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-univ.bg-info {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-univ.bg-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-univ.bg-warning {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.badge-univ.bg-danger {
+    background: #fce4ec;
+    color: #c62828;
+}
+
+/* Animated progress bars */
+.progress-univ {
+    height: 8px;
+    border-radius: 4px;
+    background: #e0e0e0;
+    overflow: hidden;
+}
+
+.progress-univ .progress-bar {
+    background: linear-gradient(90deg, var(--univ-primary), var(--univ-secondary));
+    transition: width 0.5s ease;
+}
+
+/* Search panel improvements */
+.o_search_panel .o_search_panel_section {
+    border-radius: var(--univ-radius);
+    margin-bottom: 8px;
+}
+
+/* Subtle row striping */
+.o_list_view .table tbody tr:nth-child(even) {
+    background-color: rgba(26, 115, 232, 0.03);
+}

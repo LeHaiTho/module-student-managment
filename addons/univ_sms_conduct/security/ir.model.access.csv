@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_conduct_criteria_admin,conduct.criteria.admin,model_univ_sms_conduct_criteria,univ_sms_base.group_univ_admin,1,1,1,1
+access_conduct_criteria_student_affairs,conduct.criteria.student_affairs,model_univ_sms_conduct_criteria,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_conduct_criteria_advisor,conduct.criteria.advisor,model_univ_sms_conduct_criteria,univ_sms_base.group_univ_advisor,1,0,0,0
+access_conduct_criteria_dean,conduct.criteria.dean,model_univ_sms_conduct_criteria,univ_sms_base.group_univ_dean,1,0,0,0
+access_conduct_score_admin,conduct.score.admin,model_univ_sms_conduct_score,univ_sms_base.group_univ_admin,1,1,1,1
+access_conduct_score_student_affairs,conduct.score.student_affairs,model_univ_sms_conduct_score,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_conduct_score_advisor,conduct.score.advisor,model_univ_sms_conduct_score,univ_sms_base.group_univ_advisor,1,1,1,0
+access_conduct_score_dean,conduct.score.dean,model_univ_sms_conduct_score,univ_sms_base.group_univ_dean,1,1,0,0
+access_conduct_score_portal,conduct.score.portal,model_univ_sms_conduct_score,base.group_portal,1,0,0,0
+access_conduct_score_line_admin,conduct.score.line.admin,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_admin,1,1,1,1
+access_conduct_score_line_student_affairs,conduct.score.line.student_affairs,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_conduct_score_line_advisor,conduct.score.line.advisor,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_advisor,1,1,1,0
+access_conduct_score_line_dean,conduct.score.line.dean,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_dean,1,1,0,0
+access_conduct_score_line_portal,conduct.score.line.portal,model_univ_sms_conduct_score_line,base.group_portal,1,0,0,0

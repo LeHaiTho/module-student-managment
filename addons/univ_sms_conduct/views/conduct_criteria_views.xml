@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_conduct_criteria_tree" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.criteria.tree</field>
+        <field name="model">univ.sms.conduct.criteria</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="group_name"/>
+                <field name="name"/>
+                <field name="max_score"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_conduct_criteria_form" model="ir.ui.view">
+        <field name="name">univ.sms.conduct.criteria.form</field>
+        <field name="model">univ.sms.conduct.criteria</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="group_name"/>
+                        <field name="max_score"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_conduct_criteria" model="ir.actions.act_window">
+        <field name="name">Tiêu chí rèn luyện</field>
+        <field name="res_model">univ.sms.conduct.criteria</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

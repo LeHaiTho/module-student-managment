@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_health_insurance_admin,health.insurance.admin,model_univ_sms_health_insurance,univ_sms_base.group_univ_admin,1,1,1,1
+access_health_insurance_officer,health.insurance.officer,model_univ_sms_health_insurance,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_health_insurance_student,health.insurance.student,model_univ_sms_health_insurance,base.group_portal,1,0,0,0
+access_residence_info_admin,residence.info.admin,model_univ_sms_residence_info,univ_sms_base.group_univ_admin,1,1,1,1
+access_residence_info_officer,residence.info.officer,model_univ_sms_residence_info,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_residence_info_student,residence.info.student,model_univ_sms_residence_info,base.group_portal,1,0,0,0
+access_military_service_admin,military.service.admin,model_univ_sms_military_service,univ_sms_base.group_univ_admin,1,1,1,1
+access_military_service_officer,military.service.officer,model_univ_sms_military_service,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
+access_military_service_student,military.service.student,model_univ_sms_military_service,base.group_portal,1,1,1,0

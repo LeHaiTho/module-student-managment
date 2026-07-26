@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ý thức học tập -->
+        <record id="criteria_study_attitude_1" model="univ.sms.conduct.criteria">
+            <field name="name">Chuyên cần học tập</field>
+            <field name="group_name">study_attitude</field>
+            <field name="max_score">10</field>
+        </record>
+        <record id="criteria_study_attitude_2" model="univ.sms.conduct.criteria">
+            <field name="name">Đạt kết quả học tập</field>
+            <field name="group_name">study_attitude</field>
+            <field name="max_score">10</field>
+        </record>
+
+        <!-- Ý thức chấp hành nội quy -->
+        <record id="criteria_discipline_1" model="univ.sms.conduct.criteria">
+            <field name="name">Chấp hành nội quy trường</field>
+            <field name="group_name">discipline</field>
+            <field name="max_score">10</field>
+        </record>
+        <record id="criteria_discipline_2" model="univ.sms.conduct.criteria">
+            <field name="name">Tham dự đầy đủ các buổi học</field>
+            <field name="group_name">discipline</field>
+            <field name="max_score">10</field>
+        </record>
+
+        <!-- Hoạt động đoàn thể, xã hội -->
+        <record id="criteria_activity_1" model="univ.sms.conduct.criteria">
+            <field name="name">Tham gia câu lạc bộ, đội nhóm</field>
+            <field name="group_name">activity</field>
+            <field name="max_score">10</field>
+        </record>
+        <record id="criteria_activity_2" model="univ.sms.conduct.criteria">
+            <field name="name">Tình nguyện, hoạt động xã hội</field>
+            <field name="group_name">activity</field>
+            <field name="max_score">10</field>
+        </record>
+
+        <!-- Quan hệ với cộng đồng -->
+        <record id="criteria_citizen_1" model="univ.sms.conduct.criteria">
+            <field name="name">Quan hệ tốt với bạn bè</field>
+            <field name="group_name">citizen</field>
+            <field name="max_score">10</field>
+        </record>
+
+        <!-- Vai trò trong lớp/đoàn thể -->
+        <record id="criteria_class_role_1" model="univ.sms.conduct.criteria">
+            <field name="name">Tham gia hoạt động lớp</field>
+            <field name="group_name">class_role</field>
+            <field name="max_score">10</field>
+        </record>
+    </data>
+</odoo>

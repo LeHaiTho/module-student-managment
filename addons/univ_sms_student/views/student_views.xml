@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_univ_sms_student_form" model="ir.ui.view">
+        <field name="name">univ.sms.student.form</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <form string="Sinh viên">
+                <header>
+                    <button name="action_confirm" string="Xác nhận nhập học"
+                            type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_check_academic_warning" string="Xét cảnh báo học vụ"
+                            type="object"
+                            invisible="state != 'studying'"/>
+                    <button name="action_on_leave" string="Bảo lưu"
+                            type="object"
+                            invisible="state != 'studying'"/>
+                    <button name="action_graduate" string="Tốt nghiệp"
+                            type="object" class="btn-success"
+                            invisible="state != 'studying'"/>
+                    <button name="action_drop" string="Buộc thôi học"
+                            type="object" class="btn-danger"
+                            invisible="state in ('graduated','dropped','dismissed')"/>
+                    <button name="action_dismiss" string="Thôi học tự nguyện"
+                            type="object"
+                            invisible="state in ('graduated','dropped','dismissed')"/>
+                    <button name="action_reset_draft" string="Về hồ sơ mới"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,studying,graduated"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(univ_sms_student.action_univ_sms_enrollment)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-book">
+                            <field name="enrollment_ids" widget="statinfo" string="Đăng ký học"/>
+                        </button>
+                    </div>
+
+                    <!-- Cảnh báo học vụ nổi bật -->
+                    <div class="alert alert-warning mb-3" role="alert"
+                         invisible="academic_warning_level == 'none'">
+                        <strong>Cảnh báo học vụ:</strong>
+                        <field name="academic_warning_level" readonly="1"/>
+                    </div>
+
+                    <field name="image_1920" widget="image" class="oe_avatar"
+                           options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Họ và tên sinh viên"/>
+                        </h1>
+                        <div class="d-flex gap-3">
+                            <span class="text-muted">MSSV:</span>
+                            <field name="student_code" readonly="True" class="fw-bold"/>
+                        </div>
+                    </div>
+
+                    <notebook>
+                        <!-- Tab 1: Thông tin cơ bản -->
+                        <page string="Thông tin cơ bản" name="basic_info">
+                            <group>
+                                <group string="Thông tin cá nhân">
+                                    <field name="date_of_birth"/>
+                                    <field name="gender"/>
+                                    <field name="id_number"/>
+                                    <field name="id_issue_date"/>
+                                    <field name="id_issue_place"/>
+                                    <field name="ethnicity"/>
+                                    <field name="religion"/>
+                                    <field name="policy_object"/>
+                                </group>
+                                <group string="Thông tin liên lạc">
+                                    <field name="phone"/>
+                                    <field name="mobile"/>
+                                    <field name="personal_email"/>
+                                    <field name="school_email" readonly="1"/>
+                                    <field name="home_address"/>
+                                    <field name="home_province_id"/>
+                                    <field name="current_address"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <!-- Tab 2: Thông tin gia đình -->
+                        <page string="Thông tin gia đình" name="family_info">
+                            <group>
+                                <group string="Thông tin cha">
+                                    <field name="father_name"/>
+                                    <field name="father_phone"/>
+                                    <field name="father_job"/>
+                                </group>
+                                <group string="Thông tin mẹ">
+                                    <field name="mother_name"/>
+                                    <field name="mother_phone"/>
+                                    <field name="mother_job"/>
+                                </group>
+                            </group>
+                            <group string="Người liên hệ khẩn cấp">
+                                <field name="emergency_contact_name"/>
+                                <field name="emergency_contact_phone"/>
+                            </group>
+                        </page>
+
+                        <!-- Tab 3: Thông tin học vụ -->
+                        <page string="Thông tin học vụ" name="academic_info">
+                            <group>
+                                <group string="Chương trình đào tạo">
+                                    <field name="program_id"/>
+                                    <field name="home_class_id"/>
+                                    <field name="academic_year_id"/>
+                                    <field name="training_system"/>
+                                    <field name="enrollment_date"/>
+                                    <field name="advisor_id"/>
+                                </group>
+                                <group string="Tình trạng học vụ">
+                                    <field name="state" readonly="1"/>
+                                    <field name="academic_warning_level" readonly="1"/>
+                                </group>
+                            </group>
+                            <separator string="Lịch sử đăng ký học"/>
+                            <field name="enrollment_ids">
+                                <tree>
+                                    <field name="subject_id"/>
+                                    <field name="term_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'completed'"
+                                           decoration-warning="state == 'registered'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_student_tree" model="ir.ui.view">
+        <field name="name">univ.sms.student.tree</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <tree string="Sinh viên"
+                  decoration-info="state == 'studying'"
+                  decoration-muted="state in ('dropped','dismissed')"
+                  decoration-warning="academic_warning_level in ('level1','level2')">
+                <field name="student_code"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="program_id"/>
+                <field name="home_class_id"/>
+                <field name="training_system"/>
+                <field name="enrollment_date"/>
+                <field name="academic_warning_level" widget="badge"
+                       decoration-warning="academic_warning_level == 'level1'"
+                       decoration-danger="academic_warning_level in ('level2','dismissed')"
+                       decoration-success="academic_warning_level == 'none'"
+                       optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'studying'"
+                       decoration-success="state == 'graduated'"
+                       decoration-warning="state == 'on_leave'"
+                       decoration-danger="state in ('dropped','dismissed')"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Readonly lookup view: tra cứu nhanh, không lặp CRUD thêm/sửa/xóa -->
+    <record id="view_univ_sms_student_lookup_tree" model="ir.ui.view">
+        <field name="name">univ.sms.student.lookup.tree</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <tree string="Tra cứu sinh viên" create="0" edit="0" delete="0"
+                  decoration-info="state == 'studying'"
+                  decoration-muted="state in ('dropped','dismissed')"
+                  decoration-warning="academic_warning_level in ('level1','level2')">
+                <field name="student_code" string="MSSV"/>
+                <field name="name" string="Họ tên"/>
+                <field name="program_id" string="Ngành"/>
+                <field name="home_class_id" string="Lớp"/>
+                <field name="school_email" string="Email trường"/>
+                <field name="mobile" string="Di động"/>
+                <field name="academic_warning_level" widget="badge"
+                       decoration-warning="academic_warning_level == 'level1'"
+                       decoration-danger="academic_warning_level in ('level2','dismissed')"
+                       decoration-success="academic_warning_level == 'none'"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'studying'"
+                       decoration-success="state == 'graduated'"
+                       decoration-warning="state == 'on_leave'"
+                       decoration-danger="state in ('dropped','dismissed')"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_student_lookup_form" model="ir.ui.view">
+        <field name="name">univ.sms.student.lookup.form</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <form string="Hồ sơ sinh viên" create="0" edit="0" delete="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(univ_sms_student.action_univ_sms_enrollment)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-book"
+                                context="{'search_default_student_id': id, 'create': False}">
+                            <field name="enrollment_ids" widget="statinfo" string="Đăng ký học"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar"
+                           options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                        <div class="d-flex gap-3">
+                            <span class="text-muted">MSSV tự động:</span>
+                            <field name="student_code" readonly="1" class="fw-bold"/>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Thông tin học tập">
+                            <field name="program_id" readonly="1"/>
+                            <field name="home_class_id" readonly="1"/>
+                            <field name="academic_year_id" readonly="1"/>
+                            <field name="training_system" readonly="1"/>
+                            <field name="enrollment_date" readonly="1"/>
+                            <field name="advisor_id" readonly="1"/>
+                        </group>
+                        <group string="Liên hệ và trạng thái">
+                            <field name="school_email" readonly="1"/>
+                            <field name="personal_email" readonly="1"/>
+                            <field name="mobile" readonly="1"/>
+                            <field name="phone" readonly="1"/>
+                            <field name="state" readonly="1"/>
+                            <field name="academic_warning_level" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Thông tin cá nhân">
+                            <group>
+                                <group>
+                                    <field name="date_of_birth" readonly="1"/>
+                                    <field name="gender" readonly="1"/>
+                                    <field name="id_number" readonly="1"/>
+                                    <field name="ethnicity" readonly="1"/>
+                                    <field name="religion" readonly="1"/>
+                                    <field name="policy_object" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="home_address" readonly="1"/>
+                                    <field name="home_province_id" readonly="1"/>
+                                    <field name="current_address" readonly="1"/>
+                                    <field name="emergency_contact_name" readonly="1"/>
+                                    <field name="emergency_contact_phone" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Lịch sử đăng ký học">
+                            <field name="enrollment_ids" readonly="1" nolabel="1">
+                                <tree create="0" edit="0" delete="0">
+                                    <field name="subject_id"/>
+                                    <field name="term_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'completed'"
+                                           decoration-info="state == 'registered'"
+                                           decoration-muted="state == 'cancelled'"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_student_search" model="ir.ui.view">
+        <field name="name">univ.sms.student.search</field>
+        <field name="model">univ.sms.student</field>
+        <field name="arch" type="xml">
+            <search string="Tìm sinh viên">
+                <!-- Tìm kiếm đa trường -->
+                <field name="name" string="Họ tên / MSSV"
+                       filter_domain="['|','|','|','|', ('name','ilike',self), ('student_code','ilike',self), ('school_email','ilike',self), ('mobile','ilike',self), ('phone','ilike',self)]"/>
+                <field name="student_code" string="MSSV"/>
+                <field name="id_number" string="Số CCCD/CMND"/>
+                <field name="phone" string="Số điện thoại"/>
+                <field name="mobile" string="Di động"/>
+                <field name="school_email" string="Email trường"/>
+                <field name="program_id" string="Ngành học"/>
+                <field name="home_class_id" string="Lớp hành chính"/>
+                <field name="academic_year_id" string="Niên khóa"/>
+
+                <separator/>
+
+                <!-- Bộ lọc trạng thái -->
+                <filter name="studying" string="Đang học" domain="[('state','=','studying')]"/>
+                <filter name="draft" string="Hồ sơ mới" domain="[('state','=','draft')]"/>
+                <filter name="on_leave" string="Bảo lưu" domain="[('state','=','on_leave')]"/>
+                <filter name="graduated" string="Đã tốt nghiệp" domain="[('state','=','graduated')]"/>
+                <filter name="dropped" string="Đã thôi học"
+                        domain="[('state','in',('dropped','dismissed'))]"/>
+
+                <separator/>
+
+                <!-- Lọc hệ đào tạo -->
+                <filter name="regular" string="Hệ chính quy" domain="[('training_system','=','regular')]"/>
+                <filter name="part_time" string="Vừa làm vừa học" domain="[('training_system','=','part_time')]"/>
+
+                <separator/>
+
+                <!-- Cảnh báo học vụ -->
+                <filter name="warning" string="Có cảnh báo học vụ"
+                        domain="[('academic_warning_level','!=','none')]"/>
+                <filter name="warning_level2" string="Cảnh báo lần 2 (nguy cơ thôi học)"
+                        domain="[('academic_warning_level','=','level2')]"/>
+
+                <!-- Nhóm theo -->
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_program" string="Ngành học" context="{'group_by': 'program_id'}"/>
+                    <filter name="group_home_class" string="Lớp hành chính" context="{'group_by': 'home_class_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by': 'state'}"/>
+                    <filter name="group_year" string="Năm nhập học" context="{'group_by': 'enrollment_date:year'}"/>
+                    <filter name="group_training" string="Hệ đào tạo" context="{'group_by': 'training_system'}"/>
+                    <filter name="group_warning" string="Mức cảnh báo" context="{'group_by': 'academic_warning_level'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_student_lookup" model="ir.actions.act_window">
+        <field name="name">Tra cứu sinh viên</field>
+        <field name="res_model">univ.sms.student</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_univ_sms_student_lookup_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_univ_sms_student_lookup_form')})]"/>
+        <field name="search_view_id" ref="view_univ_sms_student_search"/>
+        <field name="context">{'search_default_studying': 1, 'create': False, 'edit': False, 'delete': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Tra cứu hồ sơ sinh viên
+            </p>
+            <p>
+                Nhập MSSV, họ tên, email hoặc số điện thoại để xem nhanh hồ sơ sinh viên.
+                Màn hình này chỉ dùng để tra cứu, không thêm/sửa/xóa hồ sơ.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_student" model="ir.actions.act_window">
+        <field name="name">Sinh viên</field>
+        <field name="res_model">univ.sms.student</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_student_search"/>
+        <field name="context">{'search_default_studying': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Thêm sinh viên đầu tiên
+            </p>
+            <p>
+                Tạo hồ sơ sinh viên mới. MSSV sẽ được sinh tự động theo format
+                [Năm][Mã ngành][Số thứ tự] — ví dụ: 24CNTT0001.
+            </p>
+        </field>
+    </record>
+    <record id="action_univ_sms_student_create" model="ir.actions.act_window">
+        <field name="name">Thêm sinh viên mới</field>
+        <field name="res_model">univ.sms.student</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_univ_sms_student_form"/>
+        <field name="target">current</field>
+        <field name="context">{'default_state': 'draft'}</field>
+    </record>
+</odoo>

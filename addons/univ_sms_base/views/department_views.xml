@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_univ_sms_department_form" model="ir.ui.view">
+        <field name="name">univ.sms.department.form</field>
+        <field name="model">univ.sms.department</field>
+        <field name="arch" type="xml">
+            <form string="Bộ môn">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Tên bộ môn"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="faculty_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Ngành đào tạo" name="programs">
+                            <field name="program_ids">
+                                <tree>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="total_credits"/>
+                                    <field name="duration_years"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree View -->
+    <record id="view_univ_sms_department_tree" model="ir.ui.view">
+        <field name="name">univ.sms.department.tree</field>
+        <field name="model">univ.sms.department</field>
+        <field name="arch" type="xml">
+            <tree string="Bộ môn">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="faculty_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_univ_sms_department_search" model="ir.ui.view">
+        <field name="name">univ.sms.department.search</field>
+        <field name="model">univ.sms.department</field>
+        <field name="arch" type="xml">
+            <search string="Tìm bộ môn">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="faculty_id"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_faculty" string="Khoa" context="{'group_by': 'faculty_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_univ_sms_department" model="ir.actions.act_window">
+        <field name="name">Bộ môn</field>
+        <field name="res_model">univ.sms.department</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_department_search"/>
+        <field name="help" type="html">
+            <p class="o_view_no_content_smiling_face">
+                Tạo bộ môn đầu tiên
+            </p>
+        </field>
+    </record>
+</odoo>

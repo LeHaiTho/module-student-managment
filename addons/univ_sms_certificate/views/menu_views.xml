@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 7 - Giấy chứng nhận -->
+    <menuitem id="menu_certificate_root" name="📜 Giấy chứng nhận"
+              parent="univ_sms_base.menu_univ_sms_root" sequence="90"/>
+
+    <menuitem id="menu_certificate_type"
+              name="📁 Loại chứng nhận" parent="menu_certificate_root"
+              action="action_certificate_type" sequence="10"/>
+
+    <menuitem id="menu_certificate_request"
+              name="📨 Yêu cầu cấp giấy" parent="menu_certificate_root"
+              action="action_certificate_request" sequence="20"/>
+</odoo>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_univ_sms_fee"
+              name="💰 Học phí"
+              parent="univ_sms_base.menu_univ_sms_root"
+              sequence="60"/>
+
+    <menuitem id="menu_univ_sms_fee_list"
+              name="📋 Danh sách học phí"
+              parent="menu_univ_sms_fee"
+              action="action_univ_sms_fee"
+              sequence="10"/>
+
+    <menuitem id="menu_univ_sms_fee_invoice"
+              name="🧾 Hóa đơn"
+              parent="menu_univ_sms_fee"
+              action="action_univ_sms_fee_invoice"
+              sequence="20"/>
+</odoo>

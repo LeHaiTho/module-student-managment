@@ -1,0 +1,20 @@
+{
+    'name': 'University SMS - Registration',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Đăng ký môn học (DKMH/DKMNV)',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': ['base', 'mail', 'univ_sms_base', 'univ_sms_student', 'univ_sms_class', 'univ_sms_exam'],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/security_rules.xml',
+        'views/registration_period_views.xml',
+        'views/course_offering_views.xml',
+        'views/registration_views.xml',
+        'views/elective_wish_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': True,
+}

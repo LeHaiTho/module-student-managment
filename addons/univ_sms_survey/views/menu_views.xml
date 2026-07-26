@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menu Phase 7 - Khảo sát -->
+    <menuitem id="menu_survey_root" name="📊 Khảo sát"
+              parent="univ_sms_base.menu_univ_sms_root" sequence="100"/>
+
+    <menuitem id="menu_survey_type"
+              name="📋 Loại khảo sát" parent="menu_survey_root"
+              action="action_survey_type" sequence="10"/>
+
+    <menuitem id="menu_survey_instance"
+              name="📅 Đợt khảo sát" parent="menu_survey_root"
+              action="action_survey_instance" sequence="20"/>
+
+    <menuitem id="menu_survey_response"
+              name="✍️ Phản hồi khảo sát" parent="menu_survey_root"
+              action="action_survey_response" sequence="30"/>
+</odoo>

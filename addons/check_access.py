@@ -1,0 +1,7 @@
+admin = env['res.users'].browse(2)
+env2 = env(user=admin)
+ok = env2['univ.sms.enrollment'].check_access_rights('create', raise_exception=False)
+print('Admin (uid=2) has create access to enrollment:', ok)
+grp = env.ref('univ_sms_base.group_univ_admin')
+print('Admin in group_univ_admin:', grp.id in admin.groups_id.ids)
+print('Admin groups:', admin.groups_id.filtered(lambda g: 'University' in (g.category_id.name or '')).mapped('name'))

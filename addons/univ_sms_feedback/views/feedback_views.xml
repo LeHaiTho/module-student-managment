@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_feedback_tree" model="ir.ui.view">
+        <field name="name">univ.sms.feedback.tree</field>
+        <field name="model">univ.sms.feedback</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="student_id"/>
+                <field name="category"/>
+                <field name="subject"/>
+                <field name="department_id"/>
+                <field name="state" widget="badge"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_feedback_form" model="ir.ui.view">
+        <field name="name">univ.sms.feedback.form</field>
+        <field name="model">univ.sms.feedback</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_in_progress" type="object" string="Tiếp nhận"
+                            invisible="state != 'new'" class="btn-primary"/>
+                    <button name="action_resolved" type="object" string="Đã xử lý"
+                            invisible="state != 'in_progress'" class="btn-success"/>
+                    <button name="action_close" type="object" string="Đóng"
+                            invisible="state != 'resolved'" class="btn-secondary"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="subject"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="category"/>
+                        </group>
+                        <group>
+                            <field name="department_id" options="{'no_create': True}"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Nội dung">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                        <page string="Phản hồi">
+                            <field name="response" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_feedback_search" model="ir.ui.view">
+        <field name="name">univ.sms.feedback.search</field>
+        <field name="model">univ.sms.feedback</field>
+        <field name="arch" type="xml">
+            <search string="Tìm góp ý">
+                <field name="subject" string="Tiêu đề"/>
+                <field name="student_id" string="Sinh viên"/>
+                <field name="department_id" string="Bộ phận"/>
+                <separator/>
+                <filter name="new" string="Mới" domain="[('state','=','new')]"/>
+                <filter name="in_progress" string="Đang xử lý" domain="[('state','=','in_progress')]"/>
+                <filter name="resolved" string="Đã xử lý" domain="[('state','=','resolved')]"/>
+                <separator/>
+                <filter name="academic" string="Học tập" domain="[('category','=','academic')]"/>
+                <filter name="facility" string="Cơ sở vật chất" domain="[('category','=','facility')]"/>
+                <filter name="service" string="Dịch vụ" domain="[('category','=','service')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                    <filter name="group_category" string="Loại" context="{'group_by':'category'}"/>
+                    <filter name="group_department" string="Bộ phận" context="{'group_by':'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_feedback" model="ir.actions.act_window">
+        <field name="name">Phản hồi / Góp ý</field>
+        <field name="res_model">univ.sms.feedback</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_feedback_search"/>
+        <field name="context">{'search_default_new': 1}</field>
+    </record>
+</odoo>

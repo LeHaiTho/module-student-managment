@@ -1,0 +1,30 @@
+{
+    'name': 'University SMS - Base',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Dữ liệu master: Khoa, Bộ môn, Ngành, Môn học, Năm học, Học kỳ',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': ['base', 'mail'],
+    'data': [
+        'security/security_groups.xml',
+        'security/security_groups_v2.xml',
+        'security/ir.model.access.csv',
+        'data/academic_period_data.xml',
+        'data/admin_user_data.xml',
+        'data/demo_users.xml',
+        'views/faculty_views.xml',
+        'views/department_views.xml',
+        'views/program_views.xml',
+        'views/subject_views.xml',
+        'views/academic_period_views.xml',
+        'views/menu_views.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'univ_sms_base/static/src/css/univ_sms_theme.css',
+        ],
+    },
+    'installable': True,
+    'application': True,
+}
