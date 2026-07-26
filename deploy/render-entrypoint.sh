@@ -41,6 +41,35 @@ with open(conf_path, "w") as f:
 PY
 fi
 
+if [ -n "${ODOO_DB_NAME:-}" ]; then
+    python3 - <<'PY'
+# Render's free web service has no persistent disk, so /var/lib/odoo (filestore)
+# is wiped on every restart while ir_attachment rows in Postgres survive.
+# Stale rows pointing at compiled JS/CSS bundles then 500 on load; delete them
+# so Odoo recompiles fresh bundles against the current filestore.
+import os
+import psycopg2
+
+try:
+    conn = psycopg2.connect(
+        host=os.environ.get("HOST"),
+        port=os.environ.get("PORT", "5432"),
+        user=os.environ.get("USER"),
+        password=os.environ.get("PASSWORD"),
+        dbname=os.environ.get("ODOO_DB_NAME"),
+    )
+    conn.autocommit = True
+    with conn.cursor() as cur:
+        cur.execute(
+            "DELETE FROM ir_attachment WHERE res_model = 'ir.ui.view' AND name ILIKE %s",
+            ('%assets%',),
+        )
+    conn.close()
+except Exception:
+    pass
+PY
+fi
+
 if [ "${ODOO_AUTO_INIT:-true}" = "true" ] && [ -n "${ODOO_DB_NAME:-}" ]; then
     install_modules="${ODOO_INSTALL_MODULES:-base}"
     exec /entrypoint.sh odoo -d "$ODOO_DB_NAME" -i "$install_modules" --without-demo=all
