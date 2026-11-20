@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_registration_waitlist_tree" model="ir.ui.view">
+        <field name="name">univ.sms.registration.waitlist.tree</field>
+        <field name="model">univ.sms.registration.waitlist</field>
+        <field name="arch" type="xml">
+            <tree string="Danh sách chờ" create="0"
+                  decoration-info="state == 'waiting'"
+                  decoration-success="state == 'promoted'"
+                  decoration-muted="state in ('cancelled', 'rejected')">
+                <field name="offering_id"/>
+                <field name="student_id"/>
+                <field name="period_id" optional="hide"/>
+                <field name="request_date"/>
+                <field name="position"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'waiting'"
+                       decoration-success="state == 'promoted'"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="processed_date" optional="show"/>
+                <field name="note" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_registration_waitlist_form" model="ir.ui.view">
+        <field name="name">univ.sms.registration.waitlist.form</field>
+        <field name="model">univ.sms.registration.waitlist</field>
+        <field name="arch" type="xml">
+            <form string="Danh sách chờ">
+                <header>
+                    <button name="action_promote_now" type="object" string="Xét nhận người chờ"
+                            invisible="state != 'waiting'" class="btn-primary"
+                            groups="univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_admin"/>
+                    <button name="action_cancel" type="object" string="Hủy chờ"
+                            invisible="state != 'waiting'" class="btn-secondary"
+                            groups="univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_admin"/>
+                    <field name="state" widget="statusbar" statusbar_visible="waiting,promoted"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}" readonly="id"/>
+                            <field name="offering_id" options="{'no_create': True}" readonly="id"/>
+                            <field name="period_id" options="{'no_create': True}" readonly="id"/>
+                            <field name="subject_id"/>
+                            <field name="term_id"/>
+                        </group>
+                        <group>
+                            <field name="request_date" readonly="id"/>
+                            <field name="position" invisible="state != 'waiting'"/>
+                            <field name="processed_date"/>
+                            <field name="registration_id"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_registration_waitlist_search" model="ir.ui.view">
+        <field name="name">univ.sms.registration.waitlist.search</field>
+        <field name="model">univ.sms.registration.waitlist</field>
+        <field name="arch" type="xml">
+            <search string="Tìm danh sách chờ">
+                <field name="student_id"/>
+                <field name="offering_id"/>
+                <field name="subject_id"/>
+                <field name="period_id"/>
+                <filter name="waiting" string="Đang chờ" domain="[('state','=','waiting')]"/>
+                <filter name="promoted" string="Đã được nhận" domain="[('state','=','promoted')]"/>
+                <filter name="rejected" string="Bị từ chối" domain="[('state','=','rejected')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_offering" string="Lớp môn học" context="{'group_by':'offering_id'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_registration_waitlist" model="ir.actions.act_window">
+        <field name="name">Danh sách chờ</field>
+        <field name="res_model">univ.sms.registration.waitlist</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_registration_waitlist_search"/>
+        <field name="context">{'search_default_waiting': 1, 'search_default_group_offering': 1}</field>
+    </record>
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Ngưỡng tỷ lệ vắng (%) để xét điều kiện dự thi. Dùng chung F2/F3. -->
+        <record id="config_max_absence_rate" model="ir.config_parameter">
+            <field name="key">univ_sms.max_absence_rate</field>
+            <field name="value">20</field>
+        </record>
+    </data>
+</odoo>

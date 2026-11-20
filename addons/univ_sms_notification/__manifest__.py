@@ -8,6 +8,7 @@
     'depends': ['base', 'mail', 'univ_sms_base', 'univ_sms_student', 'univ_sms_class'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security_rules.xml',
         'views/notification_views.xml',
         'views/menu_views.xml',
     ],

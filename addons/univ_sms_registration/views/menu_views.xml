@@ -20,6 +20,11 @@
               action="action_registration"
               sequence="30"/>
 
+    <menuitem id="menu_registration_waitlist" name="⏳ Danh sách chờ"
+              parent="menu_registration_root"
+              action="action_registration_waitlist"
+              sequence="35"/>
+
     <menuitem id="menu_elective_wish" name="⭐ Nguyện vọng"
               parent="menu_registration_root"
               action="action_elective_wish"

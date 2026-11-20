@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Rule theo nhóm được OR với nhau cho cùng một user: Admin (kế thừa cả Cố vấn
+        lẫn Phòng Đào tạo) vẫn thấy toàn bộ nhờ rule (1,'=',1) của Phòng Đào tạo.
+    -->
+    <!-- ===== univ.sms.warning ===== -->
+    <record id="rule_warning_advisor_own" model="ir.rule">
+        <field name="name">Cảnh báo sớm: cố vấn chỉ thấy sinh viên mình phụ trách</field>
+        <field name="model_id" ref="model_univ_sms_warning"/>
+        <field name="domain_force">[('advisor_partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_advisor'))]"/>
+    </record>
+    <record id="rule_warning_staff_all" model="ir.rule">
+        <field name="name">Cảnh báo sớm: Phòng Đào tạo / CTSV / Admin thấy tất cả</field>
+        <field name="model_id" ref="model_univ_sms_warning"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_academic_officer')),
+                                    (4, ref('univ_sms_base.group_univ_student_affairs_office')),
+                                    (4, ref('univ_sms_base.group_univ_admin'))]"/>
+    </record>
+    <record id="rule_warning_portal_own" model="ir.rule">
+        <field name="name">Cảnh báo sớm: sinh viên chỉ xem cảnh báo của mình</field>
+        <field name="model_id" ref="model_univ_sms_warning"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <!-- ===== univ.sms.warning.consultation ===== -->
+    <record id="rule_warning_consultation_advisor_own" model="ir.rule">
+        <field name="name">Tư vấn cảnh báo: cố vấn chỉ thấy cảnh báo mình phụ trách</field>
+        <field name="model_id" ref="model_univ_sms_warning_consultation"/>
+        <field name="domain_force">[('warning_id.advisor_partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_advisor'))]"/>
+    </record>
+    <record id="rule_warning_consultation_staff_all" model="ir.rule">
+        <field name="name">Tư vấn cảnh báo: Phòng Đào tạo / CTSV / Admin thấy tất cả</field>
+        <field name="model_id" ref="model_univ_sms_warning_consultation"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_academic_officer')),
+                                    (4, ref('univ_sms_base.group_univ_student_affairs_office')),
+                                    (4, ref('univ_sms_base.group_univ_admin'))]"/>
+    </record>
+    <record id="rule_warning_consultation_portal_own" model="ir.rule">
+        <field name="name">Tư vấn cảnh báo: sinh viên chỉ xem của mình</field>
+        <field name="model_id" ref="model_univ_sms_warning_consultation"/>
+        <field name="domain_force">[('warning_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

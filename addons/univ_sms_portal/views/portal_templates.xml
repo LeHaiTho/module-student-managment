@@ -258,14 +258,58 @@
     <template id="portal_attendance" name="Attendance">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <!-- Điều kiện dự thi theo lớp: tính từ student đã truyền vào (bản ghi sudo) -->
+            <t t-set="att_enrollments" t-value="student.enrollment_ids.filtered(lambda e: e.class_id and e.state == 'registered') if student else []"/>
             <div class="o_portal_my_doc_table">
                 <h3>Điểm danh: <t t-esc="student.name"/></h3>
-                <table class="table table-sm table-striped mt-3">
+
+                <h5 class="mt-4">Chuyên cần và điều kiện dự thi</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered mt-2">
+                        <thead>
+                            <tr>
+                                <th>Lớp học phần</th>
+                                <th class="text-center">Vắng / Số buổi</th>
+                                <th class="text-center">Tỷ lệ vắng</th>
+                                <th>Điều kiện dự thi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="att_enrollments" t-as="enr">
+                                <td><t t-esc="enr.class_id.name"/></td>
+                                <td class="text-center"><t t-esc="enr.absence_count"/> / <t t-esc="enr.total_sessions"/></td>
+                                <td t-attf-class="text-center #{'text-danger fw-bold' if enr.has_attendance_warning else ''}">
+                                    <t t-esc="'%.1f' % enr.absence_rate"/>%
+                                </td>
+                                <td>
+                                    <t t-if="not enr.eligibility_checked_at">
+                                        <span class="badge bg-secondary">Chưa xét</span>
+                                    </t>
+                                    <t t-elif="enr.exam_eligible">
+                                        <span class="badge bg-success">Đủ điều kiện</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="badge bg-danger">Không đủ điều kiện</span>
+                                        <div class="small text-danger" t-esc="enr.exam_ineligible_reason"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr t-if="not att_enrollments">
+                                <td colspan="4" class="text-center text-muted">Chưa có lớp học phần đang học.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="mt-4">Lịch sử điểm danh</h5>
+                <div class="table-responsive">
+                <table class="table table-sm table-striped mt-2">
                     <thead>
                         <tr>
                             <th>Ngày</th>
                             <th>Lớp học phần</th>
                             <th>Trạng thái</th>
+                            <th>Giờ check-in</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -285,13 +329,22 @@
                                     <t t-elif="att.state == 'late'">Đi trễ</t>
                                     <t t-elif="att.state == 'excused'">Có phép</t>
                                 </span>
+                                <span t-if="att.sheet_id.state == 'draft'" class="badge bg-light text-dark">Chưa chốt</span>
+                            </td>
+                            <td>
+                                <t t-if="att.checkin_time">
+                                    <span t-field="att.checkin_time" t-options="{'widget': 'datetime', 'format': 'HH:mm dd/MM/yyyy'}"/>
+                                    <small t-if="att.checkin_source == 'qr'" class="text-muted">(QR)</small>
+                                </t>
+                                <t t-else="">-</t>
                             </td>
                         </tr>
                         <tr t-if="not attendance_lines">
-                            <td colspan="3" class="text-center text-muted">Chưa có dữ liệu điểm danh.</td>
+                            <td colspan="4" class="text-center text-muted">Chưa có dữ liệu điểm danh.</td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </t>
     </template>
@@ -299,10 +352,24 @@
     <template id="portal_registration" name="Đăng ký môn học">
         <t t-call="portal.portal_layout">
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
-            <div class="o_portal_my_doc_table">
+            <div class="o_portal_my_doc_table o_univ_registration">
                 <h3>Đăng ký môn học</h3>
 
-                <t t-if="not period">
+                <!-- Kết quả thao tác gần nhất (JS điền nội dung bằng textContent) -->
+                <div id="univ_reg_result" class="alert mt-3 d-none" role="alert" aria-live="polite"/>
+                <div t-if="cancel_status == 'ok'" class="alert alert-success mt-3" role="alert">
+                    Đã hủy đăng ký. Nếu lớp có người chờ, người đầu danh sách sẽ được nhận tự động.
+                </div>
+                <div t-if="cancel_status == 'denied'" class="alert alert-danger mt-3" role="alert">
+                    Không thể hủy đăng ký này (không thuộc về bạn, đã hủy hoặc đợt đăng ký đã đóng).
+                </div>
+
+                <t t-if="not student">
+                    <div class="alert alert-warning mt-3">
+                        Tài khoản này chưa gắn với hồ sơ sinh viên nên không thể đăng ký môn.
+                    </div>
+                </t>
+                <t t-elif="not period">
                     <div class="alert alert-info mt-3">
                         Hiện không có đợt đăng ký môn học nào đang mở.
                     </div>
@@ -311,111 +378,141 @@
                     <div class="alert alert-success mt-3">
                         <strong>Đợt ĐKMH đang mở:</strong> <t t-esc="period.name"/>
                         — Học kỳ: <t t-esc="period.term_id.name"/>
-                        <span t-if="period.max_credit">
-                            | Tối đa <t t-esc="period.max_credit"/> TC
-                        </span>
+                        <br class="d-sm-none"/>
+                        <span class="ms-sm-2">Đã đăng ký: <strong><t t-esc="'%g' % total_credits"/></strong> TC</span>
+                        <span t-if="period.max_credit"> / tối đa <t t-esc="period.max_credit"/> TC</span>
                     </div>
 
-                    <!-- Danh sách môn đã đăng ký -->
+                    <!-- Môn đã đăng ký -->
                     <h5 class="mt-4">Môn đã đăng ký</h5>
                     <t t-if="not my_registrations">
                         <p class="text-muted">Chưa đăng ký môn nào.</p>
                     </t>
-                    <table t-else="" class="table table-sm table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Môn học</th>
-                                <th>Số TC</th>
-                                <th>Giảng viên</th>
-                                <th>Sĩ số</th>
-                                <th>Trạng thái</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="my_registrations" t-as="reg">
-                                <td><t t-esc="reg.offering_id.subject_id.name"/></td>
-                                <td><t t-esc="reg.offering_id.subject_id.credit"/> TC</td>
-                                <td><t t-esc="reg.offering_id.lecturer_id.name or '—'"/></td>
-                                <td>
-                                    <t t-esc="reg.offering_id.registered_count"/>/<t t-esc="reg.offering_id.max_seats"/>
-                                </td>
-                                <td>
-                                    <span t-attf-class="badge #{
-                                        'bg-success' if reg.state == 'confirmed' else
-                                        'bg-primary' if reg.state == 'registered' else
-                                        'bg-warning' if reg.state == 'draft' else 'bg-secondary'
-                                    }">
-                                        <t t-if="reg.state == 'confirmed'">Đã xác nhận</t>
-                                        <t t-elif="reg.state == 'registered'">Đã đăng ký</t>
-                                        <t t-elif="reg.state == 'draft'">Nháp</t>
-                                        <t t-else="">Đã hủy</t>
-                                    </span>
-                                </td>
-                                <td>
-                                    <form t-if="reg.state in ('draft', 'registered')"
-                                          t-attf-action="/my/academic/registration/cancel/#{reg.id}"
-                                          method="post"
-                                          onsubmit="return confirm('Xác nhận hủy đăng ký?')">
-                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hủy</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div t-else="" class="table-responsive">
+                        <table class="table table-sm table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Môn học</th>
+                                    <th>Số TC</th>
+                                    <th class="d-none d-md-table-cell">Giảng viên</th>
+                                    <th>Sĩ số</th>
+                                    <th>Trạng thái</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="my_registrations" t-as="reg">
+                                    <td><t t-esc="reg.offering_id.subject_id.name"/></td>
+                                    <td><t t-esc="'%g' % reg.offering_id.subject_id.credit"/></td>
+                                    <td class="d-none d-md-table-cell"><t t-esc="reg.offering_id.lecturer_id.name or '—'"/></td>
+                                    <td>
+                                        <t t-esc="reg.offering_id.registered_count"/>/<t t-esc="reg.offering_id.max_seats"/>
+                                    </td>
+                                    <td>
+                                        <span t-attf-class="badge #{
+                                            'bg-success' if reg.state == 'confirmed' else
+                                            'bg-primary' if reg.state == 'registered' else
+                                            'bg-warning text-dark' if reg.state == 'draft' else 'bg-secondary'
+                                        }">
+                                            <t t-if="reg.state == 'confirmed'">Đã xác nhận</t>
+                                            <t t-elif="reg.state == 'registered'">Đã đăng ký</t>
+                                            <t t-elif="reg.state == 'draft'">Nháp</t>
+                                            <t t-else="">Đã hủy</t>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form t-if="reg.state in ('draft', 'registered', 'confirmed')"
+                                              t-attf-action="/my/academic/registration/cancel/#{reg.id}"
+                                              method="post"
+                                              onsubmit="if (!confirm('Xác nhận hủy đăng ký?')) { return false; } this.querySelector('button').disabled = true; return true;">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hủy</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <!-- Danh sách môn mở -->
+                    <!-- Danh sách chờ của tôi -->
+                    <t t-if="my_waitlist">
+                        <h5 class="mt-4">Danh sách chờ của tôi</h5>
+                        <ul class="list-group mb-3">
+                            <li t-foreach="my_waitlist" t-as="wl"
+                                class="list-group-item d-flex flex-column flex-sm-row justify-content-between gap-1">
+                                <span>
+                                    <strong><t t-esc="wl.offering_id.subject_id.name"/></strong>
+                                    <small class="text-muted">(<t t-esc="wl.offering_id.name"/>)</small>
+                                </span>
+                                <span t-if="wl.state == 'waiting'" class="badge bg-warning text-dark align-self-start">
+                                    Bạn đang ở vị trí chờ số <t t-esc="wl.position"/>
+                                </span>
+                                <span t-else="" class="text-danger small">
+                                    Không được nhận: <t t-esc="wl.note or 'không đủ điều kiện'"/>
+                                </span>
+                            </li>
+                        </ul>
+                    </t>
+
+                    <!-- Các lớp môn học đang mở -->
                     <h5 class="mt-4">Các lớp môn học đang mở</h5>
                     <t t-if="not offerings">
                         <p class="text-muted">Không có lớp môn học nào được mở trong học kỳ này.</p>
                     </t>
-                    <table t-else="" class="table table-sm table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Môn học</th>
-                                <th>Số TC</th>
-                                <th>Giảng viên</th>
-                                <th>Còn chỗ</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="offerings" t-as="off">
-                                <t t-set="already_registered" t-value="off.id in registered_offering_ids"/>
-                                <t t-set="is_full" t-value="off.registered_count >= off.max_seats"/>
-                                <tr t-attf-class="#{
-                                    'table-success' if already_registered else
-                                    'text-muted' if is_full else ''
-                                }">
-                                    <td>
-                                        <strong><t t-esc="off.subject_id.name"/></strong>
-                                        <small t-if="off.subject_id.code" class="text-muted ms-1">
-                                            (<t t-esc="off.subject_id.code"/>)
-                                        </small>
-                                    </td>
-                                    <td><t t-esc="off.subject_id.credit"/> TC</td>
-                                    <td><t t-esc="off.lecturer_id.name or '—'"/></td>
-                                    <td>
-                                        <span t-attf-class="badge #{
-                                            'bg-danger' if is_full else 'bg-success'
-                                        }">
-                                            <t t-esc="off.max_seats - off.registered_count"/> chỗ
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span t-if="already_registered" class="badge bg-success">Đã đăng ký</span>
-                                        <button t-elif="not is_full"
-                                                class="btn btn-sm btn-primary portal-reg-btn"
-                                                t-att-data-offering-id="off.id">
-                                            Đăng ký
-                                        </button>
-                                        <span t-else="" class="text-danger">Đã đủ chỗ</span>
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                    <div t-else="" class="row g-2">
+                        <t t-foreach="offerings" t-as="off">
+                            <t t-set="already_registered" t-value="off.id in registered_offering_ids"/>
+                            <t t-set="wait_position" t-value="waiting_positions.get(off.id)"/>
+                            <t t-set="is_full" t-value="off.is_full"/>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div t-attf-class="card h-100 #{'border-success' if already_registered else ''}">
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="card-title mb-1">
+                                            <t t-esc="off.subject_id.name"/>
+                                            <small t-if="off.subject_id.code" class="text-muted">(<t t-esc="off.subject_id.code"/>)</small>
+                                        </h6>
+                                        <div class="small text-muted mb-2">
+                                            <t t-esc="'%g' % off.subject_id.credit"/> TC
+                                            · GV: <t t-esc="off.lecturer_id.name or '—'"/>
+                                        </div>
+                                        <div t-if="off.class_id.timetable_ids" class="small mb-2">
+                                            <t t-foreach="off.class_id.timetable_ids" t-as="slot">
+                                                <div><t t-esc="slot._slot_label()"/><t t-if="slot.room"> · P.<t t-esc="slot.room"/></t></div>
+                                            </t>
+                                        </div>
+                                        <div class="mb-2">
+                                            <span t-attf-class="badge #{'bg-danger' if is_full else 'bg-success'}">
+                                                <t t-if="off.max_seats">
+                                                    <t t-esc="off.registered_count"/>/<t t-esc="off.max_seats"/> ·
+                                                    còn <t t-esc="off.available_seats"/> chỗ
+                                                </t>
+                                                <t t-else="">Không giới hạn chỗ</t>
+                                            </span>
+                                            <span t-if="off.waitlist_count" class="badge bg-warning text-dark ms-1">
+                                                <t t-esc="off.waitlist_count"/> người chờ
+                                            </span>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <span t-if="already_registered" class="badge bg-success">Đã đăng ký</span>
+                                            <span t-elif="wait_position" class="badge bg-warning text-dark">
+                                                Bạn đang ở vị trí chờ số <t t-esc="wait_position"/>
+                                            </span>
+                                            <button t-elif="not is_full" type="button"
+                                                    class="btn btn-sm btn-primary w-100 portal-reg-btn"
+                                                    t-att-data-offering-id="off.id">
+                                                Đăng ký
+                                            </button>
+                                            <button t-else="" type="button"
+                                                    class="btn btn-sm btn-outline-warning w-100 portal-reg-btn"
+                                                    t-att-data-offering-id="off.id">
+                                                Lớp đã đầy — vào danh sách chờ
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
                 </t>
 
                 <div class="mt-3">
@@ -424,33 +521,71 @@
             </div>
 
             <script>
-                document.querySelectorAll('.portal-reg-btn').forEach(function(btn) {
-                    btn.addEventListener('click', function() {
-                        var offeringId = this.dataset.offeringId;
-                        var self = this;
-                        self.disabled = true;
-                        self.textContent = 'Đang đăng ký...';
-                        fetch('/my/academic/registration/add', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                jsonrpc: '2.0', method: 'call', id: 1,
-                                params: {offering_id: parseInt(offeringId)}
+                (function () {
+                    var KEY = 'univ_reg_result';
+                    var box = document.getElementById('univ_reg_result');
+                    var CLASSES = {registered: 'alert-success', waitlisted: 'alert-warning',
+                                   already: 'alert-info', rejected: 'alert-danger', error: 'alert-danger'};
+                    function show(status, message) {
+                        if (!box) { return; }
+                        box.className = 'alert mt-3 ' + (CLASSES[status] || 'alert-info');
+                        box.textContent = message || '';
+                        box.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    }
+                    try {
+                        var saved = sessionStorage.getItem(KEY);
+                        if (saved) {
+                            sessionStorage.removeItem(KEY);
+                            saved = JSON.parse(saved);
+                            show(saved.status, saved.message);
+                        }
+                    } catch (e) { /* sessionStorage không khả dụng: bỏ qua */ }
+
+                    var busy = false;
+                    var buttons = document.querySelectorAll('.portal-reg-btn');
+                    function setBusy(state) {
+                        busy = state;
+                        buttons.forEach(function (b) { b.disabled = state; });
+                    }
+                    buttons.forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            if (busy) { return; }
+                            var original = btn.textContent;
+                            setBusy(true);
+                            btn.textContent = 'Đang xử lý...';
+                            fetch('/my/academic/registration/add', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0', method: 'call', id: Date.now(),
+                                    params: {offering_id: parseInt(btn.dataset.offeringId, 10)}
+                                })
                             })
-                        })
-                        .then(function(r) { return r.json(); })
-                        .then(function(data) {
-                            if (data.result &amp;&amp; data.result.success) {
-                                location.reload();
-                            } else {
-                                var msg = (data.result &amp;&amp; data.result.error) || 'Đăng ký thất bại';
-                                alert(msg);
-                                self.disabled = false;
-                                self.textContent = 'Đăng ký';
-                            }
+                            .then(function (r) { return r.json(); })
+                            .then(function (data) {
+                                var res = data &amp;&amp; data.result;
+                                if (!res) {
+                                    show('error', 'Không thể đăng ký lúc này. Vui lòng tải lại trang và thử lại.');
+                                } else if (res.status === 'registered' || res.status === 'waitlisted' || res.status === 'already') {
+                                    try { sessionStorage.setItem(KEY, JSON.stringify(res)); } catch (e) { /* bỏ qua */ }
+                                    show(res.status, res.message);
+                                    window.location.reload();
+                                    return;
+                                } else {
+                                    show(res.status, res.message);
+                                }
+                                btn.textContent = original;
+                                setBusy(false);
+                            })
+                            .catch(function () {
+                                show('error', 'Mất kết nối tới máy chủ. Vui lòng thử lại.');
+                                btn.textContent = original;
+                                setBusy(false);
+                            });
                         });
                     });
-                });
+                })();
             </script>
         </t>
     </template>

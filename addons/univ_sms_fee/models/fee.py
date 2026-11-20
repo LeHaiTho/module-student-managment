@@ -1,5 +1,9 @@
+import logging
+
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class UnivSmsFee(models.Model):
@@ -28,10 +32,13 @@ class UnivSmsFee(models.Model):
         required=True,
         default=500000.0,
     )
+    # Không còn là field compute: được tính lại chủ động mỗi khi enrollment của
+    # (sinh viên, học kỳ) thay đổi, và CHỈ khi khoản phí còn 'draft' (xem
+    # _recompute_total_credits). Khoản phí đã lập hóa đơn giữ nguyên số tín chỉ/số tiền.
     total_credits = fields.Integer(
         string='Tổng số tín chỉ',
-        compute='_compute_total_credits',
-        store=True,
+        readonly=True,
+        default=0,
     )
     total_amount = fields.Monetary(
         string='Tổng học phí',
@@ -57,6 +64,10 @@ class UnivSmsFee(models.Model):
         default=lambda self: self.env['res.currency'].with_context(active_test=False).search(
             [('name', '=', 'VND')], limit=1
         ) or self.env.company.currency_id,
+    )
+    due_date = fields.Date(
+        string='Hạn thanh toán',
+        help='Quá hạn mà còn nợ sẽ phát sinh cảnh báo sớm về học phí.',
     )
     invoice_ids = fields.One2many(
         'univ.sms.fee.invoice',
@@ -84,21 +95,64 @@ class UnivSmsFee(models.Model):
             term_name = record.term_id.name or ''
             record.name = f'{student_name} - {term_name}'
 
-    @api.depends('student_id', 'term_id')
+    # ─── Tín chỉ học phí (F1, schema 2.6) ─────────────────────────────────
+    def _get_enrolled_credits(self):
+        """Tổng tín chỉ các enrollment còn hiệu lực (không tính 'cancelled')."""
+        self.ensure_one()
+        if not self.student_id or not self.term_id:
+            return 0
+        enrollments = self.env['univ.sms.enrollment'].sudo().search([
+            ('student_id', '=', self.student_id.id),
+            ('term_id', '=', self.term_id.id),
+            ('state', '!=', 'cancelled'),
+        ])
+        return int(round(sum(enrollments.mapped('subject_id.credit'))))
+
+    def _recompute_total_credits(self):
+        """Tính lại tổng tín chỉ cho khoản phí còn 'draft'.
+
+        Khoản phí đã lập hóa đơn / đã thanh toán thì KHÔNG đổi số tiền. Model
+        univ.sms.fee không có mail.thread nên không ghi chatter; chỉ ghi log server
+        khi số tín chỉ thực tế lệch với số đã chốt.
+        """
+        for fee in self:
+            credits = fee._get_enrolled_credits()
+            if fee.state != 'draft':
+                if credits != fee.total_credits:
+                    _logger.info(
+                        'Fee %s (%s) đã lập hóa đơn: giữ nguyên %s TC, enrollment hiện có %s TC.',
+                        fee.id, fee.state, fee.total_credits, credits)
+                continue
+            if fee.total_credits != credits:
+                fee.total_credits = credits
+
+    # Giữ tên cũ để các script seed/mock gọi trực tiếp vẫn chạy.
     def _compute_total_credits(self):
-        Enrollment = self.env['univ.sms.enrollment']
-        for record in self:
-            if record.student_id and record.term_id:
-                enrollments = Enrollment.search([
-                    ('student_id', '=', record.student_id.id),
-                    ('term_id', '=', record.term_id.id),
-                    ('state', '=', 'registered'),
-                ])
-                record.total_credits = sum(
-                    enr.subject_id.credit for enr in enrollments
-                )
-            else:
-                record.total_credits = 0
+        self._recompute_total_credits()
+
+    @api.model
+    def _recompute_for_student_terms(self, keys):
+        """keys: iterable (student_id, term_id). Tính lại các khoản phí tương ứng."""
+        keys = {(s, t) for s, t in keys if s and t}
+        if not keys:
+            return
+        fees = self.sudo().search([
+            ('student_id', 'in', list({k[0] for k in keys})),
+            ('term_id', 'in', list({k[1] for k in keys})),
+        ]).filtered(lambda f: (f.student_id.id, f.term_id.id) in keys)
+        fees._recompute_total_credits()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._recompute_total_credits()
+        return records
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'student_id' in vals or 'term_id' in vals:
+            self._recompute_total_credits()
+        return res
 
     @api.depends('fee_per_credit', 'total_credits')
     def _compute_total_amount(self):
@@ -135,6 +189,17 @@ class UnivSmsFee(models.Model):
         if not self.student_id or not self.student_id.partner_id:
             raise UserError('Sinh viên chưa có đối tác liên hệ!')
 
+        existing = self.invoice_ids.filtered(lambda inv: inv.state != 'cancel')[:1]
+        if existing:
+            # Không tạo hóa đơn trùng: trả về hóa đơn còn hiệu lực.
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Hóa đơn',
+                'res_model': 'univ.sms.fee.invoice',
+                'view_mode': 'form',
+                'res_id': existing.id,
+            }
+        self._recompute_total_credits()
         invoice_vals = {
             'fee_id': self.id,
             'student_id': self.student_id.id,

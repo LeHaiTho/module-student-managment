@@ -1,5 +1,10 @@
+import logging
+
 from odoo.addons.portal.controllers.portal import CustomerPortal
+from odoo.exceptions import UserError, ValidationError
 from odoo.http import request, route
+
+_logger = logging.getLogger(__name__)
 
 
 class UnivSmsPortal(CustomerPortal):
@@ -396,13 +401,21 @@ class UnivSmsPortal(CustomerPortal):
             request.env['univ.sms.feedback'].sudo().create(vals)
         return request.redirect('/my/academic/feedback')
 
+    # ─── ĐĂNG KÝ MÔN HỌC (F1) ───────────────────────────────────────────────
+
+    def _get_open_registration_period(self):
+        """Đợt đăng ký chính thức đang mở (mới nhất)."""
+        return request.env['univ.sms.registration.period'].sudo().search([
+            ('state', '=', 'open'),
+            ('reg_type', '=', 'regular'),
+        ], order='date_start desc, id desc', limit=1)
+
     @route(['/my/academic/registration'], type='http', auth='user', website=True)
     def portal_registration(self, **kw):
         student = self._get_student()
-        period = request.env['univ.sms.registration.period'].sudo().search([
-            ('state', '=', 'open'),
-            ('reg_type', '=', 'regular'),
-        ], limit=1)
+        period = self._get_open_registration_period()
+        Registration = request.env['univ.sms.registration'].sudo()
+        Waitlist = request.env['univ.sms.registration.waitlist'].sudo()
 
         if period:
             offerings = request.env['univ.sms.course.offering'].sudo().search([
@@ -412,58 +425,94 @@ class UnivSmsPortal(CustomerPortal):
         else:
             offerings = request.env['univ.sms.course.offering'].sudo().browse()
 
+        my_registrations = Registration.browse()
+        my_waitlist = Waitlist.browse()
         if student and period:
-            my_registrations = request.env['univ.sms.registration'].sudo().search([
+            my_registrations = Registration.search([
                 ('student_id', '=', student.id),
                 ('period_id', '=', period.id),
                 ('state', '!=', 'cancelled'),
             ])
-        else:
-            my_registrations = request.env['univ.sms.registration'].sudo().browse()
+            my_waitlist = Waitlist.search([
+                ('student_id', '=', student.id),
+                ('period_id', '=', period.id),
+                ('state', 'in', ('waiting', 'rejected')),
+            ], order='request_date desc, id desc')
 
+        occupying = my_registrations.filtered(lambda r: r.state in ('registered', 'confirmed'))
+        waiting = my_waitlist.filtered(lambda w: w.state == 'waiting')
+        cancel_status = kw.get('cancel')
         return request.render('univ_sms_portal.portal_registration', {
             'student': student,
             'period': period,
             'offerings': offerings,
             'my_registrations': my_registrations,
-            'registered_offering_ids': my_registrations.mapped('offering_id').ids,
+            'my_waitlist': my_waitlist,
+            'registered_offering_ids': occupying.mapped('offering_id').ids,
+            'waiting_positions': {w.offering_id.id: w.position for w in waiting},
+            'total_credits': sum(occupying.mapped('subject_credit')),
+            'cancel_status': cancel_status if cancel_status in ('ok', 'denied') else False,
             'page_name': 'academic_registration',
         })
 
     @route(['/my/academic/registration/add'], type='json', auth='user', website=True)
     def portal_registration_add(self, offering_id=None, **kw):
+        def _reply(status, message, position=0):
+            return {'status': status, 'message': message, 'position': position}
+
         student = self._get_student()
         if not student:
-            return {'error': 'Không tìm thấy thông tin sinh viên'}
-        period = request.env['univ.sms.registration.period'].sudo().search([
-            ('state', '=', 'open'),
-            ('reg_type', '=', 'regular'),
-        ], limit=1)
-        if not period:
-            return {'error': 'Không có đợt đăng ký nào đang mở'}
+            return _reply('rejected', 'Không tìm thấy thông tin sinh viên của tài khoản này.')
+        # offering_id phải là số nguyên dương (không nhận bool / chuỗi lạ).
+        if isinstance(offering_id, bool):
+            offering_id = None
         try:
-            request.env['univ.sms.registration'].sudo().create({
-                'student_id': student.id,
-                'offering_id': int(offering_id),
-                'period_id': period.id,
-            })
-            return {'success': True}
-        except Exception as e:
-            return {'error': str(e)}
+            offering_id = int(offering_id)
+        except (TypeError, ValueError):
+            offering_id = 0
+        if offering_id <= 0:
+            return _reply('rejected', 'Lớp môn học không hợp lệ.')
+        period = self._get_open_registration_period()
+        if not period:
+            return _reply('rejected', 'Hiện không có đợt đăng ký nào đang mở.')
+        # Kiểm tra phạm vi TRƯỚC khi dùng sudo cho nghiệp vụ.
+        offering = request.env['univ.sms.course.offering'].sudo().search([
+            ('id', '=', offering_id),
+            ('term_id', '=', period.term_id.id),
+            ('active', '=', True),
+        ], limit=1)
+        if not offering:
+            return _reply('rejected', 'Lớp môn học không thuộc đợt đăng ký đang mở.')
+        try:
+            with request.env.cr.savepoint():
+                res = request.env['univ.sms.registration'].sudo().register_student(
+                    student, offering, period)
+        except (ValidationError, UserError) as exc:
+            message = exc.args[0] if exc.args else 'Đăng ký không thành công.'
+            return _reply('rejected', message)
+        except Exception:
+            _logger.exception('Portal registration failed (student %s, offering %s)',
+                              student.id, offering.id)
+            return _reply('error', 'Đã có lỗi xảy ra khi đăng ký. Vui lòng thử lại sau.')
+        return _reply(res.get('status'), res.get('message'), res.get('position') or 0)
 
     @route(['/my/academic/registration/cancel/<int:reg_id>'],
            type='http', auth='user', website=True, methods=['POST'])
     def portal_registration_cancel(self, reg_id, **kw):
         student = self._get_student()
+        status = 'denied'
         if student:
+            # Chỉ đăng ký của chính sinh viên, còn hiệu lực, trong đợt đang mở.
             reg = request.env['univ.sms.registration'].sudo().search([
                 ('id', '=', reg_id),
                 ('student_id', '=', student.id),
-                ('state', 'in', ('draft', 'registered')),
+                ('state', 'in', ('draft', 'registered', 'confirmed')),
+                ('period_id.state', '=', 'open'),
             ], limit=1)
             if reg:
                 reg.action_cancel()
-        return request.redirect('/my/academic/registration')
+                status = 'ok'
+        return request.redirect('/my/academic/registration?cancel=%s' % status)
 
     # ─── THỜI KHÓA BIỂU ──────────────────────────────────────────────────────
 

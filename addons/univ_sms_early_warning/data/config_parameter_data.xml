@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ngưỡng cảnh báo sớm. univ_sms.max_absence_rate dùng chung với F2 (univ_sms_exam):
+         module này chỉ đọc, mặc định 20 nếu chưa có. -->
+    <data noupdate="1">
+        <record id="param_warning_gpa_threshold" model="ir.config_parameter">
+            <field name="key">univ_sms.warning_gpa_threshold</field>
+            <field name="value">5.0</field>
+        </record>
+        <record id="param_warning_failed_subjects" model="ir.config_parameter">
+            <field name="key">univ_sms.warning_failed_subjects</field>
+            <field name="value">2</field>
+        </record>
+    </data>
+</odoo>

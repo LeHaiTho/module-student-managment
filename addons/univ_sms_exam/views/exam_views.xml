@@ -7,6 +7,7 @@
             <form string="Kỳ thi">
                 <header>
                     <button name="action_load_students" type="object" string="Nạp sinh viên" invisible="state != 'draft'" class="oe_highlight"/>
+                    <button name="action_compute_exam_eligibility" type="object" string="Xét điều kiện dự thi" invisible="state != 'draft'"/>
                     <button name="action_start_grading" type="object" string="Bắt đầu chấm" invisible="state != 'draft'" class="oe_highlight"/>
                     <button name="action_done" type="object" string="Hoàn thành" invisible="state != 'in_progress'" class="oe_highlight"/>
                     <button name="action_reset" type="object" string="Về dự kiến" invisible="state not in ('in_progress', 'done')" groups="univ_sms_base.group_univ_admin"/>
@@ -37,6 +38,16 @@
                                     <field name="max_score"/>
                                     <field name="percentage" widget="percentage"/>
                                     <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Không đủ điều kiện dự thi" name="ineligible">
+                            <field name="ineligible_enrollment_ids" readonly="1">
+                                <tree>
+                                    <field name="student_id"/>
+                                    <field name="absence_rate" string="Vắng (%)"/>
+                                    <field name="exam_ineligible_reason"/>
+                                    <field name="eligibility_checked_at"/>
                                 </tree>
                             </field>
                         </page>

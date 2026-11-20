@@ -49,10 +49,12 @@ class UnivSmsClass(models.Model):
         ('code_uniq', 'unique(code)', 'Mã lớp đã tồn tại!'),
     ]
 
-    @api.depends('enrollment_ids')
+    @api.depends('enrollment_ids', 'enrollment_ids.state')
     def _compute_enrollment_count(self):
+        # Chỉ đếm sinh viên còn hiệu lực (không tính đăng ký đã hủy).
         for record in self:
-            record.enrollment_count = len(record.enrollment_ids)
+            record.enrollment_count = len(
+                record.enrollment_ids.filtered(lambda e: e.state != 'cancelled'))
 
     def action_view_enrollments(self):
         self.ensure_one()

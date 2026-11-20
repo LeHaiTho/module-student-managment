@@ -27,6 +27,11 @@ PY
     )"
 fi
 
+if [ -z "${ODOO_MASTER_PASSWORD:-}" ]; then
+    echo "WARNING: ODOO_MASTER_PASSWORD is not set; generating a random master password for this run." >&2
+    ODOO_MASTER_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_urlsafe(24))')"
+fi
+
 if [ -n "${ODOO_MASTER_PASSWORD:-}" ]; then
     python3 - "$ODOO_RC" "$ODOO_MASTER_PASSWORD" <<'PY'
 import configparser

@@ -38,3 +38,23 @@ class UnivSmsTimetable(models.Model):
         hours = int(time_value)
         minutes = int((time_value - hours) * 60)
         return f'{hours:02d}:{minutes:02d}'
+
+    # ─── Trùng lịch (F1) ───────────────────────────────────────────────────
+    def _overlaps(self, other):
+        """True nếu hai buổi học cùng thứ và giao nhau về thời gian.
+
+        Hai khoảng [start, end) chạm mép (ví dụ 7-9 và 9-11) không tính trùng.
+        """
+        self.ensure_one()
+        other.ensure_one()
+        return (
+            self.day_of_week == other.day_of_week
+            and self.start_time < other.end_time
+            and other.start_time < self.end_time
+        )
+
+    def _slot_label(self):
+        """Ví dụ: 'Thứ Hai 07:00-09:00'."""
+        self.ensure_one()
+        day = dict(self._fields['day_of_week'].selection).get(self.day_of_week, '')
+        return f'{day} {self._format_time(self.start_time)}-{self._format_time(self.end_time)}'

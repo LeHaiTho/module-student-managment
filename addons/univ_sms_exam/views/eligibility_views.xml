@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lớp học: nút xét điều kiện dự thi + cột kết quả -->
+    <record id="view_univ_sms_class_form_exam_eligibility" model="ir.ui.view">
+        <field name="name">univ.sms.class.form.exam.eligibility</field>
+        <field name="model">univ.sms.class</field>
+        <field name="inherit_id" ref="univ_sms_class.view_univ_sms_class_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <button name="action_compute_exam_eligibility" string="Xét điều kiện dự thi"
+                        type="object" groups="univ_sms_base.group_univ_lecturer"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" icon="fa-ban" type="object"
+                        name="action_view_exam_ineligible">
+                    <field name="exam_ineligible_count" widget="statinfo" string="Không đủ ĐK thi"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='enrollments']/field[@name='enrollment_ids']/tree/field[@name='state']" position="after">
+                <field name="absence_rate" string="Vắng (%)"/>
+                <field name="exam_eligible" string="Đủ ĐK thi"/>
+                <field name="exam_ineligible_reason" optional="show"/>
+            </xpath>
+            <xpath expr="//page[@name='enrollments']/field[@name='enrollment_ids']/tree" position="attributes">
+                <attribute name="decoration-danger">not exam_eligible</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Danh sách đăng ký học: cột điều kiện dự thi -->
+    <record id="view_univ_sms_enrollment_tree_exam_eligibility" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.tree.exam.eligibility</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="inherit_id" ref="univ_sms_student.view_univ_sms_enrollment_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="exam_eligible" optional="show" string="Đủ ĐK thi"/>
+                <field name="exam_ineligible_reason" optional="show"/>
+                <field name="eligibility_checked_at" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Form đăng ký học: kết quả xét điều kiện dự thi -->
+    <record id="view_univ_sms_enrollment_form_exam_eligibility" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.form.exam.eligibility</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="inherit_id" ref="univ_sms_student.view_univ_sms_enrollment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Điều kiện dự thi" name="exam_eligibility">
+                    <field name="exam_eligible" readonly="1"/>
+                    <field name="exam_ineligible_reason" readonly="1" invisible="exam_eligible"/>
+                    <field name="eligibility_checked_at" readonly="1"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tìm kiếm: lọc không đủ điều kiện thi -->
+    <record id="view_univ_sms_enrollment_search_exam_eligibility" model="ir.ui.view">
+        <field name="name">univ.sms.enrollment.search.exam.eligibility</field>
+        <field name="model">univ.sms.enrollment</field>
+        <field name="inherit_id" ref="univ_sms_student.view_univ_sms_enrollment_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter name="exam_ineligible" string="Không đủ điều kiện thi"
+                        domain="[('exam_eligible', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

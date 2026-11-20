@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_univ_sms_warning_evaluation_wizard_form" model="ir.ui.view">
+        <field name="name">univ.sms.warning.evaluation.wizard.form</field>
+        <field name="model">univ.sms.warning.evaluation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Chạy đánh giá cảnh báo">
+                <field name="state" invisible="1"/>
+                <div invisible="state != 'draft'">
+                    <p>Đánh giá sinh viên đang học theo 5 quy tắc: GPA thấp, nợ nhiều môn,
+                        vắng học vượt ngưỡng, nợ học phí quá hạn, thiếu tín chỉ đăng ký.
+                        Để trống phạm vi để đánh giá toàn trường.</p>
+                    <group>
+                        <field name="home_class_ids" widget="many2many_tags"/>
+                        <field name="program_ids" widget="many2many_tags"/>
+                    </group>
+                </div>
+                <group invisible="state != 'done'" string="Kết quả">
+                    <field name="checked_count"/>
+                    <field name="created_count"/>
+                    <field name="updated_count"/>
+                    <field name="error_count" invisible="not error_count"/>
+                </group>
+                <footer>
+                    <button name="action_run" string="Chạy đánh giá" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_view_warnings" string="Xem cảnh báo" type="object"
+                            class="btn-primary" invisible="state != 'done'"/>
+                    <button string="Đóng" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_warning_evaluation_wizard" model="ir.actions.act_window">
+        <field name="name">Chạy đánh giá cảnh báo</field>
+        <field name="res_model">univ.sms.warning.evaluation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

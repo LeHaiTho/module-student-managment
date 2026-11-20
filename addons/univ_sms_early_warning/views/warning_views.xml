@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===== Consultation ===== -->
+    <record id="view_univ_sms_warning_consultation_form" model="ir.ui.view">
+        <field name="name">univ.sms.warning.consultation.form</field>
+        <field name="model">univ.sms.warning.consultation</field>
+        <field name="arch" type="xml">
+            <form string="Ghi nhận tư vấn">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="warning_id"/>
+                            <field name="student_id"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="outcome"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Nội dung trao đổi, kế hoạch hỗ trợ..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_warning_consultation_tree" model="ir.ui.view">
+        <field name="name">univ.sms.warning.consultation.tree</field>
+        <field name="model">univ.sms.warning.consultation</field>
+        <field name="arch" type="xml">
+            <tree string="Nhật ký tư vấn">
+                <field name="date"/>
+                <field name="student_id"/>
+                <field name="warning_id"/>
+                <field name="user_id"/>
+                <field name="outcome"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ===== Warning: list ===== -->
+    <record id="view_univ_sms_warning_tree" model="ir.ui.view">
+        <field name="name">univ.sms.warning.tree</field>
+        <field name="model">univ.sms.warning</field>
+        <field name="arch" type="xml">
+            <tree string="Cảnh báo sớm"
+                  decoration-danger="severity == 'high' and state != 'closed'"
+                  decoration-warning="severity == 'medium' and state != 'closed'"
+                  decoration-info="severity == 'low' and state != 'closed'"
+                  decoration-muted="state == 'closed'">
+                <field name="detected_at"/>
+                <field name="student_code"/>
+                <field name="student_id"/>
+                <field name="home_class_id" optional="show"/>
+                <field name="program_id" optional="hide"/>
+                <field name="warning_type"/>
+                <field name="severity" widget="badge"
+                       decoration-danger="severity == 'high'"
+                       decoration-warning="severity == 'medium'"
+                       decoration-info="severity == 'low'"/>
+                <field name="evidence_value"/>
+                <field name="term_id" optional="show"/>
+                <field name="advisor_partner_id" optional="show"/>
+                <field name="consultation_count" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'new'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-success="state == 'closed'"/>
+                <field name="activity_ids" widget="list_activity" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ===== Warning: form ===== -->
+    <record id="view_univ_sms_warning_form" model="ir.ui.view">
+        <field name="name">univ.sms.warning.form</field>
+        <field name="model">univ.sms.warning</field>
+        <field name="arch" type="xml">
+            <form string="Cảnh báo sớm">
+                <header>
+                    <button name="action_start" string="Bắt đầu xử lý" type="object"
+                            class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_open_consultation" string="Ghi nhận tư vấn" type="object"
+                            invisible="state == 'closed'"/>
+                    <button name="action_close" string="Đóng cảnh báo" type="object"
+                            class="btn-success" invisible="state == 'closed'"
+                            confirm="Đóng cảnh báo này? Cần có ít nhất một lần tư vấn hoặc ghi chú khi đóng."/>
+                    <button name="action_reopen" string="Mở lại" type="object"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,in_progress,closed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Đã đóng" bg_color="text-bg-success"
+                            invisible="state != 'closed'"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Sinh viên">
+                            <field name="student_id" readonly="id"/>
+                            <field name="student_code"/>
+                            <field name="home_class_id"/>
+                            <field name="program_id"/>
+                            <field name="advisor_partner_id"/>
+                        </group>
+                        <group string="Cảnh báo">
+                            <field name="warning_type" readonly="id"/>
+                            <field name="severity"/>
+                            <field name="term_id"/>
+                            <field name="detected_at"/>
+                            <field name="last_checked_at"/>
+                            <field name="closed_at" invisible="not closed_at"/>
+                            <field name="closed_by_id" invisible="not closed_by_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bằng chứng" name="evidence">
+                            <group>
+                                <field name="evidence_value"/>
+                            </group>
+                            <field name="evidence_text" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Nhật ký tư vấn" name="consultations">
+                            <field name="consultation_ids" readonly="state == 'closed'">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="user_id"/>
+                                    <field name="outcome"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Đóng cảnh báo" name="closing">
+                            <field name="close_note" readonly="state == 'closed'"
+                                   placeholder="Lý do đóng (bắt buộc nếu chưa có lần tư vấn nào)"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ===== Warning: search ===== -->
+    <record id="view_univ_sms_warning_search" model="ir.ui.view">
+        <field name="name">univ.sms.warning.search</field>
+        <field name="model">univ.sms.warning</field>
+        <field name="arch" type="xml">
+            <search string="Tìm cảnh báo">
+                <field name="student_id"/>
+                <field name="home_class_id"/>
+                <field name="program_id"/>
+                <field name="advisor_partner_id"/>
+                <field name="term_id"/>
+                <filter name="my_warnings" string="Của tôi"
+                        domain="[('advisor_partner_id.user_ids', 'in', [uid])]"/>
+                <separator/>
+                <filter name="open" string="Đang mở" domain="[('state', '!=', 'closed')]"/>
+                <filter name="state_new" string="Mới" domain="[('state', '=', 'new')]"/>
+                <filter name="state_in_progress" string="Đang xử lý" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="state_closed" string="Đã đóng" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter name="sev_high" string="Mức cao" domain="[('severity', '=', 'high')]"/>
+                <filter name="sev_medium" string="Mức trung bình" domain="[('severity', '=', 'medium')]"/>
+                <filter name="sev_low" string="Mức thấp" domain="[('severity', '=', 'low')]"/>
+                <separator/>
+                <filter name="type_gpa" string="GPA thấp" domain="[('warning_type', '=', 'gpa')]"/>
+                <filter name="type_failed" string="Nợ nhiều môn" domain="[('warning_type', '=', 'failed_subjects')]"/>
+                <filter name="type_attendance" string="Vắng học" domain="[('warning_type', '=', 'attendance')]"/>
+                <filter name="type_debt" string="Nợ học phí" domain="[('warning_type', '=', 'debt')]"/>
+                <filter name="type_credit" string="Thiếu tín chỉ" domain="[('warning_type', '=', 'credit')]"/>
+                <separator/>
+                <filter name="no_advisor" string="Chưa có cố vấn" domain="[('advisor_partner_id', '=', False)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_home_class" string="Lớp hành chính" context="{'group_by': 'home_class_id'}"/>
+                    <filter name="group_program" string="Ngành" context="{'group_by': 'program_id'}"/>
+                    <filter name="group_type" string="Loại cảnh báo" context="{'group_by': 'warning_type'}"/>
+                    <filter name="group_severity" string="Mức độ" context="{'group_by': 'severity'}"/>
+                    <filter name="group_state" string="Trạng thái" context="{'group_by': 'state'}"/>
+                    <filter name="group_advisor" string="Cố vấn" context="{'group_by': 'advisor_partner_id'}"/>
+                    <filter name="group_term" string="Học kỳ" context="{'group_by': 'term_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ===== Warning: graph / pivot ===== -->
+    <record id="view_univ_sms_warning_graph" model="ir.ui.view">
+        <field name="name">univ.sms.warning.graph</field>
+        <field name="model">univ.sms.warning</field>
+        <field name="arch" type="xml">
+            <graph string="Dashboard cảnh báo" type="bar" stacked="1" sample="1">
+                <field name="warning_type"/>
+                <field name="severity"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_warning_pivot" model="ir.ui.view">
+        <field name="name">univ.sms.warning.pivot</field>
+        <field name="model">univ.sms.warning</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích cảnh báo" sample="1">
+                <field name="home_class_id" type="row"/>
+                <field name="warning_type" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ===== Actions ===== -->
+    <record id="action_univ_sms_warning_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboard cảnh báo</field>
+        <field name="res_model">univ.sms.warning</field>
+        <field name="view_mode">graph,pivot,tree,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có cảnh báo sớm nào</p>
+            <p>Chạy "Chạy đánh giá cảnh báo" hoặc đợi tác vụ tự động hằng ngày.</p>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_warning" model="ir.actions.act_window">
+        <field name="name">Danh sách cảnh báo</field>
+        <field name="res_model">univ.sms.warning</field>
+        <field name="view_mode">tree,form,graph,pivot</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có cảnh báo sớm nào</p>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_warning_consultation" model="ir.actions.act_window">
+        <field name="name">Nhật ký tư vấn</field>
+        <field name="res_model">univ.sms.warning.consultation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

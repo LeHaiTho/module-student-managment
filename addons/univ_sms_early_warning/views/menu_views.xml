@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_univ_sms_early_warning"
+              name="Cảnh báo sớm"
+              parent="univ_sms_base.menu_univ_sms_root"
+              groups="univ_sms_base.group_univ_advisor,univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_student_affairs_office"
+              sequence="45"/>
+    <menuitem id="menu_univ_sms_warning_dashboard"
+              name="Dashboard cảnh báo"
+              parent="menu_univ_sms_early_warning"
+              action="action_univ_sms_warning_dashboard"
+              sequence="10"/>
+    <menuitem id="menu_univ_sms_warning_list"
+              name="Danh sách cảnh báo"
+              parent="menu_univ_sms_early_warning"
+              action="action_univ_sms_warning"
+              sequence="20"/>
+    <menuitem id="menu_univ_sms_warning_consultation"
+              name="Nhật ký tư vấn"
+              parent="menu_univ_sms_early_warning"
+              action="action_univ_sms_warning_consultation"
+              sequence="30"/>
+    <menuitem id="menu_univ_sms_warning_evaluation"
+              name="Chạy đánh giá cảnh báo"
+              parent="menu_univ_sms_early_warning"
+              action="action_univ_sms_warning_evaluation_wizard"
+              groups="univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_student_affairs_office"
+              sequence="40"/>
+</odoo>

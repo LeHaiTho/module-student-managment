@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Owned by Agent F2 (QR check-in templates). -->
+    <template id="portal_attendance_qr_result" name="Kết quả điểm danh QR">
+        <t t-call="web.frontend_layout">
+            <t t-set="title">Điểm danh QR</t>
+            <t t-set="no_footer" t-value="True"/>
+            <div class="container py-4" style="max-width: 480px;">
+                <div t-attf-class="card shadow-sm border-#{'success' if result == 'ok_present' else 'warning' if result in ('ok_late', 'already') else 'danger'}">
+                    <div class="card-body text-center p-4">
+                        <div class="display-4 mb-2" aria-hidden="true">
+                            <i t-attf-class="fa #{'fa-check-circle text-success' if result == 'ok_present' else 'fa-clock-o text-warning' if result == 'ok_late' else 'fa-info-circle text-warning' if result == 'already' else 'fa-times-circle text-danger'}"/>
+                        </div>
+                        <h1 class="h4 mb-3">
+                            <t t-if="success">Điểm danh</t>
+                            <t t-else="">Không điểm danh được</t>
+                        </h1>
+                        <p class="lead" t-att-data-result="result" id="qr_result_message">
+                            <t t-esc="message"/>
+                        </p>
+                        <ul class="list-unstyled text-start small mt-3" t-if="class_name">
+                            <li><strong>Lớp:</strong> <t t-esc="class_name"/></li>
+                            <li t-if="sheet_date"><strong>Buổi học:</strong> <t t-esc="sheet_date.strftime('%d/%m/%Y')"/></li>
+                            <li t-if="line_state">
+                                <strong>Trạng thái:</strong>
+                                <t t-if="line_state == 'present'">Có mặt</t>
+                                <t t-elif="line_state == 'late'">Đi trễ</t>
+                                <t t-elif="line_state == 'absent'">Vắng mặt</t>
+                                <t t-elif="line_state == 'excused'">Có phép</t>
+                            </li>
+                            <li t-if="checkin_time_str"><strong>Giờ check-in:</strong> <t t-esc="checkin_time_str"/></li>
+                        </ul>
+                        <a t-if="is_student" href="/my/academic/attendance" class="btn btn-primary w-100 mt-3">Xem lịch sử điểm danh</a>
+                        <a t-else="" href="/my" class="btn btn-secondary w-100 mt-3">Về trang cá nhân</a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

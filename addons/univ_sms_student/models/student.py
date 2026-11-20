@@ -208,34 +208,51 @@ class UnivSmsStudent(models.Model):
         return super().unlink()
 
     # ─── State machine actions ─────────────────────────────────────────────
-    def action_confirm(self):
+    # Trạng thái nguồn hợp lệ cho từng thao tác. Kiểm tra ở server, không chỉ ở view.
+    _STATE_TRANSITIONS = {
+        'studying': ('draft', 'on_leave'),
+        'on_leave': ('studying',),
+        'graduated': ('studying',),
+        'dropped': ('draft', 'studying', 'on_leave'),
+        'dismissed': ('draft', 'studying', 'on_leave'),
+    }
+
+    def _check_state_transition(self, target):
+        labels = dict(self._fields['state'].selection)
+        allowed = self._STATE_TRANSITIONS[target]
         for record in self:
-            record.state = 'studying'
+            if record.state not in allowed:
+                raise UserError(
+                    f'Không thể chuyển sinh viên "{record.name}" từ trạng thái '
+                    f'"{labels.get(record.state)}" sang "{labels.get(target)}".'
+                )
+
+    def action_confirm(self):
+        self._check_state_transition('studying')
+        self.write({'state': 'studying'})
 
     def action_on_leave(self):
-        for record in self:
-            record.state = 'on_leave'
+        self._check_state_transition('on_leave')
+        self.write({'state': 'on_leave'})
 
     def action_graduate(self):
+        self._check_state_transition('graduated')
         for record in self:
-            # Kiểm tra điều kiện tốt nghiệp
             record._check_graduation_conditions()
-            record.state = 'graduated'
+        self.write({'state': 'graduated'})
 
     def action_drop(self):
         """Buộc thôi học (do kỷ luật hoặc học vụ)"""
-        for record in self:
-            record.state = 'dropped'
+        self._check_state_transition('dropped')
+        self.write({'state': 'dropped'})
 
     def action_dismiss(self):
         """Thôi học tự nguyện"""
-        for record in self:
-            record.state = 'dismissed'
+        self._check_state_transition('dismissed')
+        self.write({'state': 'dismissed'})
 
     def action_reset_draft(self):
-        for record in self:
-            record.state = 'draft'
-            record.academic_warning_level = 'none'
+        self.write({'state': 'draft', 'academic_warning_level': 'none'})
 
     # ─── Nghiệp vụ cảnh báo học vụ ────────────────────────────────────────
     def action_check_academic_warning(self):

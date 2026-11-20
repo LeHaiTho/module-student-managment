@@ -63,7 +63,11 @@
                             <field name="subject_credit" readonly="1"/>
                             <field name="available_seats" readonly="1"/>
                             <field name="registered_credit" readonly="1"/>
+                            <field name="enrollment_id" readonly="1"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="result_message" readonly="1"/>
                     </group>
                 </sheet>
             </form>
@@ -87,7 +91,7 @@
                 <filter name="cancelled" string="Đã hủy" domain="[('state','=','cancelled')]"/>
                 <separator/>
                 <filter name="active_registration" string="Còn hiệu lực"
-                        domain="[('state','in',('draft','registered','confirmed'))]"/>
+                        domain="[('state','in',('registered','confirmed'))]"/>
                 <group expand="0" string="Nhóm theo">
                     <filter name="group_student" string="Sinh viên" context="{'group_by':'student_id'}"/>
                     <filter name="group_period" string="Đợt ĐK" context="{'group_by':'period_id'}"/>

@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Registration',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Đăng ký môn học (DKMH/DKMNV)',
     'author': 'Your Company',
@@ -12,6 +12,7 @@
         'views/registration_period_views.xml',
         'views/course_offering_views.xml',
         'views/registration_views.xml',
+        'views/registration_waitlist_views.xml',
         'views/elective_wish_views.xml',
         'views/menu_views.xml',
     ],

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Sinh viên portal chỉ đọc điểm và bảng điểm của chính mình (chặn truy cập chéo qua JSON-RPC) -->
+    <record id="rule_exam_result_portal_own" model="ir.rule">
+        <field name="name">Portal: own exam results only</field>
+        <field name="model_id" ref="model_univ_sms_exam_result"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="rule_transcript_portal_own" model="ir.rule">
+        <field name="name">Portal: own transcripts only</field>
+        <field name="model_id" ref="model_univ_sms_transcript"/>
+        <field name="domain_force">[('student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <record id="rule_transcript_line_portal_own" model="ir.rule">
+        <field name="name">Portal: own transcript lines only</field>
+        <field name="model_id" ref="model_univ_sms_transcript_line"/>
+        <field name="domain_force">[('transcript_id.student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+    <!-- Kỳ thi: sinh viên chỉ thấy kỳ thi của lớp mình đang học -->
+    <record id="rule_exam_portal_own_class" model="ir.rule">
+        <field name="name">Portal: exams of own classes only</field>
+        <field name="model_id" ref="model_univ_sms_exam"/>
+        <field name="domain_force">[('class_id.enrollment_ids.student_id.partner_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

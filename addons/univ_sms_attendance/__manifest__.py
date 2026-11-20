@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Attendance',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Quản lý điểm danh sinh viên',
     'author': 'Your Company',
@@ -10,6 +10,8 @@
         'security/ir.model.access.csv',
         'security/security_rules.xml',
         'data/admin_user_data.xml',
+        'data/config_data.xml',
+        'data/cron_data.xml',
         'views/attendance_views.xml',
         'views/menu_views.xml',
     ],

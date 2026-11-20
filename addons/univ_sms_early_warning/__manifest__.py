@@ -1,0 +1,28 @@
+{
+    'name': 'University SMS - Early Warning',
+    'version': '17.0.1.0.0',
+    'category': 'Education',
+    'summary': 'Cảnh báo sớm sinh viên có nguy cơ và dashboard cho cố vấn học tập',
+    'author': 'Your Company',
+    'license': 'LGPL-3',
+    'depends': [
+        'mail',
+        'univ_sms_student',
+        'univ_sms_exam',
+        'univ_sms_attendance',
+        'univ_sms_fee',
+        'univ_sms_registration',
+    ],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/security_rules.xml',
+        'data/config_parameter_data.xml',
+        'data/ir_cron_data.xml',
+        'views/warning_views.xml',
+        'wizard/warning_evaluation_wizard_views.xml',
+        'views/student_views.xml',
+        'views/menu_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+}

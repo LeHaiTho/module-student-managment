@@ -15,3 +15,5 @@ test-results/
 
 addons/**/__pycache__/
 addons/**/*.py[cod]
+
+backups/

@@ -13,6 +13,7 @@
                 <field name="max_seats"/>
                 <field name="registered_count"/>
                 <field name="available_seats"/>
+                <field name="waitlist_count"/>
                 <field name="is_full" optional="hide"/>
             </tree>
         </field>
@@ -39,11 +40,23 @@
                             <field name="registered_count" readonly="1"/>
                             <field name="available_seats" readonly="1"/>
                             <field name="is_full" readonly="1"/>
+                            <field name="waitlist_count" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Môn tiên quyết">
                             <field name="prerequisite_subject_ids" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Danh sách chờ">
+                            <field name="waitlist_ids" readonly="1" nolabel="1">
+                                <tree>
+                                    <field name="student_id"/>
+                                    <field name="request_date"/>
+                                    <field name="position"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="note"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

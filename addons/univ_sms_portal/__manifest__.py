@@ -22,6 +22,7 @@
     'data': [
         'views/portal_templates.xml',
         'views/portal_phase67_templates.xml',
+        'views/portal_attendance_qr_templates.xml',
     ],
     'installable': True,
     'application': False,

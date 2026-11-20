@@ -13,8 +13,22 @@
                     <button name="action_confirm" string="Xác nhận"
                             type="object" class="btn-primary"
                             invisible="state != 'draft'"/>
+                    <button name="action_start_qr_session" string="Bắt đầu điểm danh QR"
+                            type="object" class="btn-primary"
+                            groups="univ_sms_base.group_univ_lecturer"
+                            invisible="state != 'draft' or active_session_id"/>
+                    <button name="action_start_qr_session" string="Tạo mã QR mới"
+                            type="object" class="btn-secondary"
+                            groups="univ_sms_base.group_univ_lecturer"
+                            confirm="Mã QR hiện tại sẽ bị đóng và thay bằng mã mới. Tiếp tục?"
+                            invisible="state != 'draft' or not active_session_id"/>
+                    <button name="action_close_qr_session" string="Đóng phiên"
+                            type="object" class="btn-warning"
+                            groups="univ_sms_base.group_univ_lecturer"
+                            invisible="not active_session_id"/>
                     <button name="action_reset_draft" string="Về nháp"
                             type="object"
+                            groups="univ_sms_base.group_univ_academic_officer"
                             invisible="state != 'confirmed'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -37,13 +51,44 @@
                             <field name="total_excused" readonly="True"/>
                         </group>
                     </group>
+                    <field name="active_session_id" invisible="1"/>
+                    <div class="alert alert-info text-center" role="status"
+                         invisible="not active_session_id"
+                         groups="univ_sms_base.group_univ_lecturer">
+                        <h3>Sinh viên quét mã QR để điểm danh</h3>
+                        <field name="qr_image_src" widget="image_url" nolabel="1"
+                               options="{'size': [300, 300]}"/>
+                        <div>
+                            Hết hạn lúc <field name="qr_expire_time" readonly="1" class="fw-bold"/>
+                            - Đã quét: <field name="qr_checkin_count" readonly="1" class="fw-bold"/>
+                        </div>
+                        <div class="text-muted small">Mã hết hạn sau tối đa 10 phút. Bấm "Tạo mã QR mới" nếu cần thêm thời gian.</div>
+                    </div>
                     <notebook>
                         <page string="Điểm danh" name="lines">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <tree editable="bottom"
+                                      decoration-warning="state == 'late'"
+                                      decoration-danger="state == 'absent'">
                                     <field name="student_id"/>
                                     <field name="state"/>
+                                    <field name="checkin_time" optional="show"/>
+                                    <field name="checkin_source" optional="show"/>
                                     <field name="note"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Phiên QR" name="qr_sessions"
+                              groups="univ_sms_base.group_univ_lecturer">
+                            <field name="session_ids" readonly="1">
+                                <tree>
+                                    <field name="start_time"/>
+                                    <field name="expire_time"/>
+                                    <field name="late_after_minutes"/>
+                                    <field name="checkin_count"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'active'"
+                                           decoration-muted="state == 'closed'"/>
                                 </tree>
                             </field>
                         </page>
@@ -91,6 +136,64 @@
                     <filter name="group_lecturer" string="Giảng viên" context="{'group_by': 'lecturer_id'}"/>
                 </group>
             </search>
+        </field>
+    </record>
+
+    <!-- Phiên QR -->
+    <record id="view_univ_sms_attendance_session_form" model="ir.ui.view">
+        <field name="name">univ.sms.attendance.session.form</field>
+        <field name="model">univ.sms.attendance.session</field>
+        <field name="arch" type="xml">
+            <form string="Phiên điểm danh QR" create="0" edit="0">
+                <header>
+                    <button name="action_close" string="Đóng phiên" type="object"
+                            class="btn-warning" invisible="state != 'active'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sheet_id"/>
+                            <field name="class_id"/>
+                            <field name="checkin_count"/>
+                        </group>
+                        <group>
+                            <field name="start_time"/>
+                            <field name="expire_time"/>
+                            <field name="late_after_minutes"/>
+                        </group>
+                    </group>
+                    <div class="text-center" invisible="state != 'active'">
+                        <field name="qr_image_src" widget="image_url" nolabel="1"
+                               options="{'size': [300, 300]}"/>
+                        <div><field name="qr_url" widget="url" readonly="1"/></div>
+                    </div>
+                    <field name="line_ids" readonly="1">
+                        <tree>
+                            <field name="student_id"/>
+                            <field name="state"/>
+                            <field name="checkin_time"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_attendance_session_tree" model="ir.ui.view">
+        <field name="name">univ.sms.attendance.session.tree</field>
+        <field name="model">univ.sms.attendance.session</field>
+        <field name="arch" type="xml">
+            <tree string="Phiên điểm danh QR" create="0">
+                <field name="sheet_id"/>
+                <field name="class_id"/>
+                <field name="start_time"/>
+                <field name="expire_time"/>
+                <field name="checkin_count"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-muted="state == 'closed'"/>
+            </tree>
         </field>
     </record>
 

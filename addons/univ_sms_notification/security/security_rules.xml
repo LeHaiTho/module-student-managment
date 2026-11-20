@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal chỉ đọc thông báo đã đăng và còn hạn -->
+    <record id="rule_notification_portal_published" model="ir.rule">
+        <field name="name">Portal: published, unexpired notifications only</field>
+        <field name="model_id" ref="model_univ_sms_notification"/>
+        <field name="domain_force">[('state', '=', 'published'), '|', ('expire_date', '=', False), ('expire_date', '>=', time.strftime('%Y-%m-%d %H:%M:%S'))]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+</odoo>

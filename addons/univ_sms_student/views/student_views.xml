@@ -7,6 +7,9 @@
         <field name="arch" type="xml">
             <form string="Sinh viên">
                 <header>
+                    <button name="action_confirm" string="Quay lại học"
+                            type="object" class="btn-primary"
+                            invisible="state != 'on_leave'"/>
                     <button name="action_confirm" string="Xác nhận nhập học"
                             type="object" class="btn-primary"
                             invisible="state != 'draft'"/>

@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import api, models, fields
 
 
 class UnivSmsExam(models.Model):
@@ -56,17 +56,38 @@ class UnivSmsExam(models.Model):
         for record in self:
             record.state = 'draft'
 
-    def action_load_students(self):
-        """Tạo kết quả rỗng cho tất cả sinh viên trong lớp"""
+    ineligible_enrollment_ids = fields.Many2many(
+        'univ.sms.enrollment',
+        string='Sinh viên không đủ điều kiện dự thi',
+        compute='_compute_ineligible_enrollment_ids',
+    )
+
+    @api.depends('class_id')
+    def _compute_ineligible_enrollment_ids(self):
+        Enrollment = self.env['univ.sms.enrollment']
+        for record in self:
+            record.ineligible_enrollment_ids = Enrollment.search([
+                ('class_id', '=', record.class_id.id),
+                ('state', '=', 'registered'),
+                ('exam_eligible', '=', False),
+            ]) if record.class_id else Enrollment
+
+    def action_compute_exam_eligibility(self):
         self.ensure_one()
-        existing = self.result_ids.mapped('student_id').ids
-        enrollments = self.env['univ.sms.enrollment'].search([
-            ('class_id', '=', self.class_id.id),
-            ('state', '=', 'registered'),
-        ])
+        return self.class_id.action_compute_exam_eligibility()
+
+    def action_load_students(self):
+        """Tính lại điều kiện dự thi rồi tạo kết quả rỗng cho sinh viên đủ điều kiện.
+
+        Lặp lại an toàn: sinh viên đã có kết quả thì bỏ qua.
+        """
+        self.ensure_one()
+        enrollments = self.class_id._recompute_exam_eligibility()
+        existing = set(self.result_ids.mapped('student_id').ids)
         lines = []
-        for enr in enrollments:
+        for enr in enrollments.filtered('exam_eligible'):
             if enr.student_id.id not in existing:
+                existing.add(enr.student_id.id)
                 lines.append({
                     'exam_id': self.id,
                     'student_id': enr.student_id.id,
@@ -74,3 +95,4 @@ class UnivSmsExam(models.Model):
                 })
         if lines:
             self.env['univ.sms.exam.result'].create(lines)
+        return True

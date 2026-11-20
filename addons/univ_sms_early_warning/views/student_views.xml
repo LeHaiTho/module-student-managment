@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_univ_sms_student_form_early_warning" model="ir.ui.view">
+        <field name="name">univ.sms.student.form.early.warning</field>
+        <field name="model">univ.sms.student</field>
+        <field name="inherit_id" ref="univ_sms_student.view_univ_sms_student_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_warnings" type="object" class="oe_stat_button"
+                        icon="fa-exclamation-triangle"
+                        groups="univ_sms_base.group_univ_advisor,univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_student_affairs_office">
+                    <field name="warning_open_count" widget="statinfo" string="Cảnh báo mở"/>
+                </button>
+            </div>
+            <notebook position="inside">
+                <page string="Cảnh báo sớm" name="early_warning"
+                      groups="univ_sms_base.group_univ_advisor,univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_student_affairs_office">
+                    <field name="warning_ids" readonly="1">
+                        <tree decoration-danger="severity == 'high' and state != 'closed'"
+                              decoration-warning="severity == 'medium' and state != 'closed'"
+                              decoration-muted="state == 'closed'">
+                            <field name="detected_at"/>
+                            <field name="warning_type"/>
+                            <field name="severity"/>
+                            <field name="evidence_value"/>
+                            <field name="term_id"/>
+                            <field name="advisor_partner_id"/>
+                            <field name="state"/>
+                        </tree>
+                    </field>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
