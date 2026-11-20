@@ -17,3 +17,4 @@ addons/**/__pycache__/
 addons/**/*.py[cod]
 
 backups/
+!.env.prod.example
