@@ -19,10 +19,10 @@ MSYS_NO_PATHCONV=1 docker compose run --rm -T odoo odoo shell \
   Dòng `Lỗi: 0` nghĩa là mọi phần đều chạy được.
 * Trên server deploy: đặt `web.base.url` (Thiết lập → Tham số hệ thống) là URL
   công khai **trước** khi demo QR, vì mã QR chứa URL này.
-* Lưu ý bảo mật cho bản demo công khai: module `univ_sms_base` còn tạo sẵn các tài
-  khoản cũ `giangvien`, `phongdaotao`, `sinhvien`, `covanht`, `truongkhoa` với mật
-  khẩu trùng tên đăng nhập (`univ_sms_base/data/demo_users.xml`). Hãy lưu trữ
-  (archive) hoặc đổi mật khẩu các tài khoản này trước khi mở cho người ngoài.
+* Tài khoản mẫu cũ (`giangvien`, `phongdaotao`, `sinhvien`, `covanht`, `truongkhoa`, mật khẩu
+  trùng tên đăng nhập) chỉ được nạp khi cài kèm dữ liệu demo của Odoo; bản deploy cài với
+  `without_demo=all` nên không có các tài khoản này. Tài khoản `admin` của Odoo đã được đổi
+  mật khẩu ngẫu nhiên trên bản deploy.
 
 Số liệu sau khi chạy trên DB mới (lần 1 và lần 2 giống nhau): 112 sinh viên,
 4 lớp hành chính, 20 lớp học (7 lớp học kỳ trước, 13 lớp học kỳ hiện tại),
