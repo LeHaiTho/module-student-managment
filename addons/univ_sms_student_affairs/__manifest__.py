@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Student Affairs',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Phòng Công tác Sinh viên: BHYT, Ngoại trú, NVQS',
     'author': 'Your Company',

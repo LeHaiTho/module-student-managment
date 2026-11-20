@@ -23,11 +23,11 @@
             <form>
                 <header>
                     <button name="action_submit" type="object" string="Gửi"
-                            invisible="state != 'draft'" class="btn-primary"/>
+                            invisible="state not in ('draft', 'rejected')" class="btn-primary"/>
                     <button name="action_advisor_approve" type="object" string="CVHT duyệt"
-                            invisible="state != 'submitted'" class="btn-success"/>
+                            invisible="state != 'submitted'" groups="univ_sms_base.group_univ_advisor" class="btn-success"/>
                     <button name="action_dean_approve" type="object" string="Khoa duyệt"
-                            invisible="state != 'advisor_approved'" class="btn-success"/>
+                            invisible="state != 'advisor_approved'" groups="univ_sms_base.group_univ_dean" class="btn-success"/>
                     <button name="action_reject" type="object" string="Trả về"
                             invisible="state not in ('submitted', 'advisor_approved')"
                             class="btn-danger"/>

@@ -25,5 +25,6 @@
 
     <menuitem id="menu_conduct_dashboard"
               name="💯 Rèn luyện Dashboard" parent="menu_dashboard_root"
-              action="action_conduct_dashboard" sequence="60"/>
+              action="action_conduct_dashboard" sequence="60"
+              groups="univ_sms_base.group_univ_academic_officer,univ_sms_base.group_univ_advisor,univ_sms_base.group_univ_dean,univ_sms_base.group_univ_student_affairs_office"/>
 </odoo>

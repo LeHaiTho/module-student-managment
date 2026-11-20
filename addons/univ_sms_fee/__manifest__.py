@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Fee',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Quản lý học phí và hóa đơn sinh viên',
     'author': 'Your Company',

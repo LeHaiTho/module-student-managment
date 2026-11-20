@@ -71,6 +71,26 @@ class UnivSmsRegistrationWaitlist(models.Model):
             ]):
                 raise ValidationError(_('Sinh viên đã ở trong danh sách chờ của lớp này.'))
 
+    def _notify_waitlist_result(self):
+        """F4: thông báo cho sinh viên kết quả xét danh sách chờ (được nhận / bị loại)."""
+        Notice = self.env['univ.sms.student.notice']
+        for entry in self:
+            subject = entry.offering_id.subject_id.name or entry.offering_id.name
+            if entry.state == 'promoted':
+                Notice._notify(
+                    entry.student_id, 'waitlist_promoted',
+                    _('Đã được nhận vào lớp môn %s') % subject,
+                    _('Lớp %s vừa có chỗ trống, bạn đã được tự động đăng ký từ danh sách chờ. '
+                      'Hãy kiểm tra lại thời khóa biểu.') % entry.offering_id.name,
+                    entry)
+            elif entry.state == 'rejected':
+                Notice._notify(
+                    entry.student_id, 'waitlist_rejected',
+                    _('Không được nhận vào lớp môn %s') % subject,
+                    _('Lớp %(offering)s có chỗ trống nhưng bạn chưa thể được nhận: %(note)s',
+                      offering=entry.offering_id.name, note=entry.note or ''),
+                    entry)
+
     def action_cancel(self):
         self.filtered(lambda r: r.state == 'waiting').write({
             'state': 'cancelled',

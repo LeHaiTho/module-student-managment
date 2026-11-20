@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Record Rule: Giảng viên chỉ xem danh sách đăng ký lớp mình dạy (chỉ restrict READ) -->
+    <!-- Record Rule: Giảng viên chỉ thấy enrollment của lớp mình dạy.
+         Các nhóm kế thừa giảng viên (cố vấn, trưởng khoa, tài chính, CTSV) được
+         mở rộng bằng các rule OR bên dưới (rule theo nhóm được cộng dồn bằng OR). -->
     <record id="rule_student_lecturer_own_class" model="ir.rule">
-        <field name="name">Lecturer: only own class students (read only)</field>
+        <field name="name">Lecturer: only own class students</field>
         <field name="model_id" ref="univ_sms_student.model_univ_sms_enrollment"/>
         <field name="domain_force">[('class_id.lecturer_id', '=', user.partner_id.id)]</field>
         <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_lecturer'))]"/>
-        <field name="perm_read">1</field>
+    </record>
+
+    <!-- Cố vấn học tập: đọc enrollment của sinh viên mình cố vấn (trực tiếp hoặc qua lớp sinh hoạt) -->
+    <record id="rule_enrollment_advisor_own_students" model="ir.rule">
+        <field name="name">Advisor: read enrollments of advised students</field>
+        <field name="model_id" ref="univ_sms_student.model_univ_sms_enrollment"/>
+        <field name="domain_force">['|', ('student_id.advisor_id', '=', user.partner_id.id), ('student_id.home_class_id.advisor_id', '=', user.partner_id.id)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_advisor'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- Phòng Tài chính, Phòng CTSV, Trưởng khoa: đọc toàn bộ enrollment -->
+    <record id="rule_enrollment_offices_read_all" model="ir.rule">
+        <field name="name">Finance / Student affairs / Dean: read all enrollments</field>
+        <field name="model_id" ref="univ_sms_student.model_univ_sms_enrollment"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('univ_sms_base.group_univ_finance_office')), (4, ref('univ_sms_base.group_univ_student_affairs_office')), (4, ref('univ_sms_base.group_univ_dean'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
     </record>
 
     <!-- Record Rule: Admin/Officer không bị giới hạn domain (toàn quyền) -->

@@ -1,8 +1,10 @@
-from odoo import models, fields, api
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class UnivSmsHealthInsurance(models.Model):
     _name = 'univ.sms.health.insurance'
+    _inherit = ['univ.sms.workflow.guard.mixin']
     _description = 'Bảo hiểm y tế sinh viên'
     _order = 'student_id'
 
@@ -28,8 +30,16 @@ class UnivSmsHealthInsurance(models.Model):
 
     is_expired = fields.Boolean(compute='_compute_is_expired', store=True)
 
+    @api.constrains('date_start', 'date_end')
+    def _check_dates(self):
+        for rec in self:
+            if rec.date_start and rec.date_end and rec.date_start >= rec.date_end:
+                raise ValidationError(_('Ngày bắt đầu hiệu lực BHYT phải trước ngày kết thúc.'))
+
     def action_confirm(self):
+        self._check_states(('draft',), _('xác nhận'))
         self.write({'state': 'confirmed'})
 
     def action_draft(self):
+        self._check_states(('confirmed',), _('đặt lại nháp'))
         self.write({'state': 'draft'})

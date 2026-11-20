@@ -109,20 +109,21 @@
                         </div>
                     </t>
 
-                    <form action="/student/register/submit" method="post" class="mt-3">
+                    <form action="/student/register/submit" method="post" class="mt-3" onsubmit="var b = this.querySelector('button[type=submit]'); if (b) { b.disabled = true; }">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Họ và tên</label>
-                                <input type="text" name="name" class="form-control" required="required"
+                                <input type="text" name="name" class="form-control" required="required" maxlength="128"
                                        t-att-value="form_values.get('name', '')"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">Ngày sinh</label>
                                 <input type="date" name="date_of_birth" class="form-control" required="required"
+                                       min="1900-01-01" t-att-max="max_birth_date"
                                        t-att-value="form_values.get('date_of_birth', '')"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">Giới tính</label>
                                 <select name="gender" class="form-select">
                                     <option t-foreach="genders" t-as="gender" t-att-value="gender[0]"
@@ -132,42 +133,47 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6" t-if="is_public_user">
+                            <div class="col-12 col-md-6" t-if="is_public_user">
                                 <label class="form-label">Tên đăng nhập</label>
                                 <input type="text" name="login" class="form-control" required="required"
+                                       minlength="3" maxlength="64" autocomplete="username"
                                        placeholder="Ví dụ: nguyenvanan hoặc email"
                                        t-att-value="form_values.get('login', '')"/>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Email liên hệ</label>
-                                <input type="email" name="personal_email" class="form-control" required="required"
+                                <input type="email" name="personal_email" class="form-control" required="required" maxlength="254"
                                        t-att-value="form_values.get('personal_email', '')"/>
                             </div>
-                            <div class="col-md-3" t-if="is_public_user">
+                            <div class="col-12 col-sm-6 col-md-3" t-if="is_public_user">
                                 <label class="form-label">Mật khẩu</label>
-                                <input type="password" name="password" class="form-control" required="required"/>
+                                <input type="password" name="password" class="form-control" required="required"
+                                       minlength="8" maxlength="128" autocomplete="new-password"/>
+                                <div class="form-text">Tối thiểu 8 ký tự.</div>
                             </div>
-                            <div class="col-md-3" t-if="is_public_user">
+                            <div class="col-12 col-sm-6 col-md-3" t-if="is_public_user">
                                 <label class="form-label">Xác nhận mật khẩu</label>
-                                <input type="password" name="confirm_password" class="form-control" required="required"/>
+                                <input type="password" name="confirm_password" class="form-control" required="required"
+                                       minlength="8" maxlength="128" autocomplete="new-password"/>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">Số điện thoại</label>
-                                <input type="text" name="phone" class="form-control"
+                                <input type="tel" name="phone" class="form-control" maxlength="20"
                                        t-att-value="form_values.get('phone', '')"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">Di động</label>
-                                <input type="text" name="mobile" class="form-control"
+                                <input type="tel" name="mobile" class="form-control" maxlength="20"
                                        t-att-value="form_values.get('mobile', '')"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">CCCD/CMND</label>
-                                <input type="text" name="id_number" class="form-control"
+                                <input type="text" name="id_number" class="form-control" inputmode="numeric"
+                                       pattern="[0-9]{9,12}" maxlength="12" title="9 đến 12 chữ số"
                                        t-att-value="form_values.get('id_number', '')"/>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-sm-6 col-md-3">
                                 <label class="form-label">Hệ đào tạo</label>
                                 <select name="training_system" class="form-select">
                                     <option t-foreach="training_systems" t-as="training_system"
@@ -178,7 +184,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Ngành học</label>
                                 <select name="program_id" class="form-select" required="required">
                                     <option value="">Chọn ngành học</option>
@@ -188,7 +194,7 @@
                                     </option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Niên khóa nhập học</label>
                                 <select name="academic_year_id" class="form-select" required="required">
                                     <option value="">Chọn niên khóa</option>
@@ -199,19 +205,19 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Địa chỉ thường trú</label>
-                                <input type="text" name="home_address" class="form-control"
+                                <input type="text" name="home_address" class="form-control" maxlength="255"
                                        t-att-value="form_values.get('home_address', '')"/>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <label class="form-label">Địa chỉ tạm trú hiện tại</label>
-                                <input type="text" name="current_address" class="form-control"
+                                <input type="text" name="current_address" class="form-control" maxlength="255"
                                        t-att-value="form_values.get('current_address', '')"/>
                             </div>
                         </div>
 
-                        <div class="mt-4 d-flex gap-2">
+                        <div class="mt-4 d-flex flex-wrap gap-2">
                             <button type="submit" class="btn btn-primary">Gửi hồ sơ đăng ký</button>
                             <a href="/university" class="btn btn-outline-secondary">Quay lại</a>
                         </div>
@@ -226,6 +232,7 @@
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
             <div class="o_portal_my_doc_table">
                 <h3>Bảng điểm: <t t-esc="student.name"/></h3>
+                <div class="table-responsive">
                 <table class="table table-sm table-striped mt-3">
                     <thead>
                         <tr>
@@ -251,6 +258,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </t>
     </template>
@@ -379,7 +387,8 @@
                         <strong>Đợt ĐKMH đang mở:</strong> <t t-esc="period.name"/>
                         — Học kỳ: <t t-esc="period.term_id.name"/>
                         <br class="d-sm-none"/>
-                        <span class="ms-sm-2">Đã đăng ký: <strong><t t-esc="'%g' % total_credits"/></strong> TC</span>
+                        <span class="ms-sm-2">Đã đăng ký trong đợt: <strong><t t-esc="'%g' % total_credits"/></strong> TC</span>
+                        <span t-if="term_credits != total_credits" class="ms-sm-2">(cả học kỳ: <strong><t t-esc="'%g' % term_credits"/></strong> TC)</span>
                         <span t-if="period.max_credit"> / tối đa <t t-esc="period.max_credit"/> TC</span>
                     </div>
 
@@ -421,7 +430,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <form t-if="reg.state in ('draft', 'registered', 'confirmed')"
+                                        <form t-if="reg.state in ('draft', 'registered', 'confirmed') and reg.period_id == period"
                                               t-attf-action="/my/academic/registration/cancel/#{reg.id}"
                                               method="post"
                                               onsubmit="if (!confirm('Xác nhận hủy đăng ký?')) { return false; } this.querySelector('button').disabled = true; return true;">
@@ -601,6 +610,7 @@
                     </div>
                 </t>
                 <t t-else="">
+                    <div class="table-responsive">
                     <table class="table table-sm table-bordered mt-3">
                         <thead class="table-light">
                             <tr>
@@ -638,6 +648,7 @@
                             </t>
                         </tbody>
                     </table>
+                    </div>
                 </t>
                 <div class="mt-3">
                     <a href="/my/academic" class="btn btn-sm btn-outline-secondary">← Quay lại</a>
@@ -651,6 +662,7 @@
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
             <div class="o_portal_my_doc_table">
                 <h3>Học phí: <t t-esc="student.name"/></h3>
+                <div class="table-responsive">
                 <table class="table table-sm table-striped mt-3">
                     <thead>
                         <tr>
@@ -692,6 +704,7 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </t>
     </template>
@@ -824,8 +837,7 @@
                                     <div class="notif-card">
                                         <div class="notif-title"><t t-esc="notif.title"/></div>
                                         <div class="notif-body">
-                                            <t t-esc="(notif.content or '')[:150]"/>
-                                            <t t-if="len(notif.content or '') > 150">…</t>
+                                            <t t-esc="notification_snippets.get(notif.id, '')"/>
                                         </div>
                                         <div class="notif-date">📅 <t t-esc="notif.publish_date"/></div>
                                     </div>

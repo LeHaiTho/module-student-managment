@@ -178,12 +178,7 @@ class UnivSmsRegistration(models.Model):
         # 5. Môn tiên quyết
         prereqs = offering.subject_id.prerequisite_ids
         if prereqs:
-            passed = self.env['univ.sms.exam.result'].sudo().search([
-                ('student_id', '=', student.id),
-                ('subject_id', 'in', prereqs.ids),
-                ('is_passed', '=', True),
-            ]).mapped('subject_id')
-            missing = prereqs - passed
+            missing = prereqs - self._get_passed_subjects(student, prereqs)
             if missing:
                 return ('prerequisite', _('Chưa hoàn thành môn tiên quyết: %s.')
                         % ', '.join(missing.mapped('name')))
@@ -207,6 +202,29 @@ class UnivSmsRegistration(models.Model):
                 'Trùng lịch với môn %(subject)s (%(slot)s).',
                 subject=other.offering_id.subject_id.name, slot=other_slot._slot_label()))
         return None
+
+    @api.model
+    def _get_passed_subjects(self, student, subjects):
+        """Môn đã đạt (điều kiện tiên quyết).
+
+        Ưu tiên điểm tổng kết trong bảng điểm (final_score >= 5.0). Môn chưa có dòng
+        bảng điểm thì chấp nhận bài thi CUỐI KỲ đạt (điểm giữa kỳ không đủ để qua môn).
+        """
+        Line = self.env['univ.sms.transcript.line'].sudo()
+        lines = Line.search([
+            ('transcript_id.student_id', '=', student.id),
+            ('subject_id', 'in', subjects.ids),
+        ])
+        passed = lines.filtered(lambda l: l.final_score >= 5.0).mapped('subject_id')
+        without_line = subjects - lines.mapped('subject_id')
+        if without_line:
+            passed |= self.env['univ.sms.exam.result'].sudo().search([
+                ('student_id', '=', student.id),
+                ('subject_id', 'in', without_line.ids),
+                ('exam_id.exam_type', '=', 'final'),
+                ('is_passed', '=', True),
+            ]).mapped('subject_id')
+        return passed
 
     # ─── Service đăng ký (schema 2.1) ──────────────────────────────────────
     @api.model
@@ -238,6 +256,44 @@ class UnivSmsRegistration(models.Model):
 
     @api.model
     def register_student(self, student, offering, period):
+        """Đăng ký một sinh viên vào lớp môn học (xem ``_register_student_core``).
+
+        Sau khi xử lý, gửi thông báo cá nhân cho sinh viên (F4). Việc gửi thông báo
+        không bao giờ làm hỏng kết quả đăng ký.
+        """
+        result = self._register_student_core(student, offering, period)
+        self._notify_registration_result(student, offering, result)
+        return result
+
+    @api.model
+    def _notify_registration_result(self, student, offering, result):
+        status = result.get('status')
+        if not student or not offering or status not in ('registered', 'waitlisted', 'rejected'):
+            return
+        Notice = self.env['univ.sms.student.notice']
+        subject = offering.subject_id.name or offering.name
+        if status == 'registered':
+            Notice._notify(
+                student, 'reg_success', _('Đăng ký thành công môn %s') % subject,
+                result.get('message'),
+                self.browse(result.get('registration_id')).exists() or offering)
+        elif status == 'waitlisted':
+            Notice._notify(
+                student, 'waitlisted', _('Đang chờ chỗ môn %s') % subject,
+                _('Lớp %(offering)s đã đủ chỗ. Bạn đang ở vị trí chờ số %(pos)s. '
+                  'Hệ thống sẽ tự động nhận bạn khi lớp có chỗ trống.',
+                  offering=offering.name, pos=result.get('position') or '?'),
+                self.env['univ.sms.registration.waitlist'].browse(
+                    result.get('waitlist_id')).exists() or offering)
+        else:
+            Notice._notify(
+                student, 'reg_rejected', _('Đăng ký môn %s không thành công') % subject,
+                _('Lớp %(offering)s: %(reason)s', offering=offering.name,
+                  reason=result.get('message') or ''),
+                offering)
+
+    @api.model
+    def _register_student_core(self, student, offering, period):
         """Đăng ký một sinh viên vào lớp môn học.
 
         Trả về dict(status, message, registration_id, waitlist_id, position) với
@@ -399,12 +455,7 @@ class UnivSmsRegistration(models.Model):
                 continue
             prereqs = rec.offering_id.subject_id.prerequisite_ids
             if prereqs:
-                passed = self.env['univ.sms.exam.result'].sudo().search([
-                    ('student_id', '=', rec.student_id.id),
-                    ('subject_id', 'in', prereqs.ids),
-                    ('is_passed', '=', True),
-                ]).mapped('subject_id')
-                missing = prereqs - passed
+                missing = prereqs - self._get_passed_subjects(rec.student_id, prereqs)
                 if missing:
                     raise ValidationError(
                         _('Chưa hoàn thành môn tiên quyết: %s') %
@@ -466,7 +517,19 @@ class UnivSmsRegistration(models.Model):
         """Hủy đăng ký: enrollment → cancelled, học phí tính lại (qua hook enrollment),
         sau đó tự động nhận người đầu danh sách chờ."""
         freed = self.filtered(lambda r: r.state in OCCUPYING_STATES).mapped('offering_id')
+        to_notify = self.filtered(
+            lambda r: r.state != 'cancelled'
+            and r.student_id.partner_id != self.env.user.partner_id)
         self.write({'state': 'cancelled', 'result_message': _('Đã hủy đăng ký.')})
+        # F4: báo cho sinh viên khi người khác (phòng đào tạo) hủy đăng ký của họ.
+        Notice = self.env['univ.sms.student.notice']
+        for reg in to_notify:
+            Notice._notify(
+                reg.student_id, 'other',
+                _('Đã hủy đăng ký môn %s') % (reg.subject_id.name or reg.offering_id.name),
+                _('Đăng ký lớp %s của bạn đã được phòng đào tạo hủy. '
+                  'Liên hệ phòng đào tạo nếu bạn cần hỗ trợ.') % reg.offering_id.name,
+                reg)
         if freed:
             freed._promote_waitlist()
         return True

@@ -1,3 +1,5 @@
+# Render Blueprint: Odoo web service (free). Database dùng Postgres ngoài (Neon free),
+# đặt DATABASE_URL trong Render Dashboard (sync: false = không commit giá trị bí mật).
 services:
   - type: web
     name: univ-sms-odoo
@@ -7,26 +9,11 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /web/health
+    autoDeploy: true
     envVars:
-      - key: PORT
-        value: "8069"
-      - key: ODOO_RC
-        value: /etc/odoo/odoo.conf
-      - key: ODOO_AUTO_INIT
-        value: "true"
-      - key: ODOO_INSTALL_MODULES
-        value: base
+      - key: DATABASE_URL
+        sync: false
       - key: ODOO_MASTER_PASSWORD
         generateValue: true
-      - key: DATABASE_URL
-        fromDatabase:
-          name: univ-sms-db
-          property: connectionString
-
-databases:
-  - name: univ-sms-db
-    plan: free
-    region: singapore
-    postgresMajorVersion: "15"
-    databaseName: univ_sms
-    user: odoo
+      - key: ODOO_UPDATE_MODULES
+        value: ""

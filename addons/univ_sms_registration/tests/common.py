@@ -85,7 +85,8 @@ class RegistrationDataMixin:
     @classmethod
     def _pass_subject(cls, student, klass, score=7.0):
         exam = cls.env['univ.sms.exam'].create({
-            'name': 'Thi %s' % klass.code, 'class_id': klass.id, 'max_score': 10.0})
+            'name': 'Thi %s' % klass.code, 'class_id': klass.id, 'max_score': 10.0,
+            'exam_type': 'final'})
         return cls.env['univ.sms.exam.result'].create({
             'exam_id': exam.id, 'student_id': student.id, 'score': score})
 

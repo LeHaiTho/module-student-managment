@@ -13,3 +13,6 @@ access_conduct_score_line_student_affairs,conduct.score.line.student_affairs,mod
 access_conduct_score_line_advisor,conduct.score.line.advisor,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_advisor,1,1,1,0
 access_conduct_score_line_dean,conduct.score.line.dean,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_dean,1,1,0,0
 access_conduct_score_line_portal,conduct.score.line.portal,model_univ_sms_conduct_score_line,base.group_portal,1,0,0,0
+access_conduct_criteria_officer,conduct.criteria.officer,model_univ_sms_conduct_criteria,univ_sms_base.group_univ_academic_officer,1,0,0,0
+access_conduct_score_officer,conduct.score.officer,model_univ_sms_conduct_score,univ_sms_base.group_univ_academic_officer,1,0,0,0
+access_conduct_score_line_officer,conduct.score.line.officer,model_univ_sms_conduct_score_line,univ_sms_base.group_univ_academic_officer,1,0,0,0

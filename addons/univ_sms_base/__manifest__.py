@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Base',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Dữ liệu master: Khoa, Bộ môn, Ngành, Môn học, Năm học, Học kỳ',
     'author': 'Your Company',
@@ -12,13 +12,17 @@
         'security/ir.model.access.csv',
         'data/academic_period_data.xml',
         'data/admin_user_data.xml',
-        'data/demo_users.xml',
         'views/faculty_views.xml',
         'views/department_views.xml',
         'views/program_views.xml',
         'views/subject_views.xml',
         'views/academic_period_views.xml',
         'views/menu_views.xml',
+    ],
+    # Tài khoản mẫu cũ (mật khẩu = tên đăng nhập): chỉ nạp khi cài kèm dữ liệu demo,
+    # không bao giờ có mặt trên bản deploy (without_demo=all).
+    'demo': [
+        'data/demo_users.xml',
     ],
     'assets': {
         'web.assets_backend': [

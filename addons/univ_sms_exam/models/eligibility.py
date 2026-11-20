@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class UnivSmsEnrollment(models.Model):
@@ -28,10 +28,14 @@ class UnivSmsEnrollment(models.Model):
         counts = self._get_attendance_counts()
         now = fields.Datetime.now()
         eligible = self.browse()
+        newly_ineligible = self.browse()
         for rec in self:
             total, absent = counts.get(rec.id, (0, 0))
             rate = absent / total * 100 if total else 0.0
             if rate > threshold:
+                # F4: chỉ báo khi chuyển từ đủ điều kiện sang không đủ (không báo lặp).
+                if rec.sudo().exam_eligible:
+                    newly_ineligible |= rec
                 rec.sudo().write({
                     'exam_eligible': False,
                     'exam_ineligible_reason': (
@@ -47,7 +51,20 @@ class UnivSmsEnrollment(models.Model):
                 'exam_ineligible_reason': False,
                 'eligibility_checked_at': now,
             })
+        newly_ineligible._notify_exam_ineligible()
         return True
+
+    def _notify_exam_ineligible(self):
+        Notice = self.env['univ.sms.student.notice']
+        for rec in self.sudo():
+            subject = rec.subject_id.name or rec.class_id.name or ''
+            Notice._notify(
+                rec.student_id, 'exam_ineligible',
+                _('Không đủ điều kiện dự thi môn %s') % subject,
+                _('Lớp %(klass)s: %(reason)s. Liên hệ giảng viên hoặc phòng đào tạo '
+                  'nếu bạn có minh chứng vắng có phép.',
+                  klass=rec.class_id.name or subject, reason=rec.exam_ineligible_reason or ''),
+                rec)
 
 
 class UnivSmsClass(models.Model):

@@ -1,8 +1,9 @@
-from odoo import models, fields
+from odoo import _, fields, models
 
 
 class UnivSmsResidenceInfo(models.Model):
     _name = 'univ.sms.residence.info'
+    _inherit = ['univ.sms.workflow.guard.mixin']
     _description = 'Thông tin cư trú/ngoại trú'
     _order = 'student_id'
 
@@ -22,7 +23,9 @@ class UnivSmsResidenceInfo(models.Model):
     ], default='draft')
 
     def action_confirm(self):
+        self._check_states(('draft',), _('xác nhận'))
         self.write({'state': 'confirmed'})
 
     def action_draft(self):
+        self._check_states(('confirmed',), _('đặt lại nháp'))
         self.write({'state': 'draft'})

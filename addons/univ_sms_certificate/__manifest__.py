@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Certificate',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Giấy chứng nhận sinh viên (bản sao VBCC, giấy xác nhận SV, xác nhận công nhận)',
     'author': 'Your Company',

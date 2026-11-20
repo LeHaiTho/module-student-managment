@@ -55,6 +55,20 @@ class TestRegistrationService(RegistrationCase):
         res = self._register(self.s1, self.off_b)
         self.assertEqual(res['status'], 'registered', res['message'])
 
+    def test_prerequisite_midterm_only_not_enough(self):
+        exam = self.env['univ.sms.exam'].create({
+            'name': 'GK', 'class_id': self.cls_old_a.id, 'max_score': 10.0, 'exam_type': 'midterm'})
+        self.env['univ.sms.exam.result'].create({'exam_id': exam.id, 'student_id': self.s1.id, 'score': 9})
+        self.assertEqual(self._register(self.s1, self.off_b)['status'], 'rejected')
+
+    def test_prerequisite_uses_transcript_final_score(self):
+        # Đạt bài cuối kỳ nhưng điểm tổng kết bảng điểm < 5 → vẫn chưa qua môn
+        self._pass_subject(self.s1, self.cls_old_a, score=6.0)
+        self.env['univ.sms.transcript'].create({
+            'student_id': self.s1.id, 'term_id': self.cls_old_a.term_id.id,
+            'line_ids': [(0, 0, {'subject_id': self.sub_a.id, 'final_score': 4.0})]})
+        self.assertEqual(self._register(self.s1, self.off_b)['status'], 'rejected')
+
     def test_prerequisite_failed_score_still_rejected(self):
         self._pass_subject(self.s1, self.cls_old_a, score=3.0)
         res = self._register(self.s1, self.off_b)

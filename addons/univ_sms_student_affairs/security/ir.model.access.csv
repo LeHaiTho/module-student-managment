@@ -7,4 +7,4 @@ access_residence_info_officer,residence.info.officer,model_univ_sms_residence_in
 access_residence_info_student,residence.info.student,model_univ_sms_residence_info,base.group_portal,1,0,0,0
 access_military_service_admin,military.service.admin,model_univ_sms_military_service,univ_sms_base.group_univ_admin,1,1,1,1
 access_military_service_officer,military.service.officer,model_univ_sms_military_service,univ_sms_base.group_univ_student_affairs_office,1,1,1,0
-access_military_service_student,military.service.student,model_univ_sms_military_service,base.group_portal,1,1,1,0
+access_military_service_student,military.service.student,model_univ_sms_military_service,base.group_portal,1,0,0,0

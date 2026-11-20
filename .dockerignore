@@ -15,3 +15,9 @@ tools/
 test-results/
 *.docx
 *.png
+
+backups/
+*.dump
+.codex*
+.claude/
+deploy/*.dump

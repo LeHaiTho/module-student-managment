@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Student',
-    'version': '17.0.2.0.0',
+    'version': '17.0.2.1.0',
     'category': 'Education',
     'summary': 'Quản lý hồ sơ sinh viên, lớp hành chính và đăng ký học',
     'author': 'Your Company',
@@ -15,6 +15,7 @@
         'views/enrollment_views.xml',
         'views/student_views.xml',
         'views/menu_views.xml',
+        'views/student_notice_views.xml',
     ],
     'installable': True,
     'application': False,

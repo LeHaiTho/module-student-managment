@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_univ_sms_student_notice_tree" model="ir.ui.view">
+        <field name="name">univ.sms.student.notice.tree</field>
+        <field name="model">univ.sms.student.notice</field>
+        <field name="arch" type="xml">
+            <tree string="Thông báo cá nhân" decoration-bf="not is_read">
+                <field name="notice_date"/>
+                <field name="student_code" optional="show"/>
+                <field name="student_id"/>
+                <field name="event_type"/>
+                <field name="title"/>
+                <field name="is_read" widget="boolean_toggle" readonly="1"/>
+                <field name="read_at" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_student_notice_form" model="ir.ui.view">
+        <field name="name">univ.sms.student.notice.form</field>
+        <field name="model">univ.sms.student.notice</field>
+        <field name="arch" type="xml">
+            <form string="Thông báo cá nhân">
+                <header>
+                    <button name="action_mark_read" string="Đánh dấu đã đọc" type="object"
+                            invisible="is_read"/>
+                    <button name="action_mark_unread" string="Đánh dấu chưa đọc" type="object"
+                            invisible="not is_read"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="title"/>
+                        <h1><field name="title" placeholder="Tiêu đề thông báo"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="student_id" options="{'no_create': True}"/>
+                            <field name="event_type"/>
+                            <field name="notice_date"/>
+                        </group>
+                        <group>
+                            <field name="is_read" readonly="1"/>
+                            <field name="read_at" readonly="1"/>
+                            <field name="res_model" groups="base.group_no_one"/>
+                            <field name="res_id" groups="base.group_no_one"/>
+                        </group>
+                    </group>
+                    <field name="body" placeholder="Nội dung thông báo"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_univ_sms_student_notice_search" model="ir.ui.view">
+        <field name="name">univ.sms.student.notice.search</field>
+        <field name="model">univ.sms.student.notice</field>
+        <field name="arch" type="xml">
+            <search string="Tìm thông báo">
+                <field name="student_id"/>
+                <field name="title"/>
+                <field name="body"/>
+                <filter name="unread" string="Chưa đọc" domain="[('is_read', '=', False)]"/>
+                <filter name="read" string="Đã đọc" domain="[('is_read', '=', True)]"/>
+                <separator/>
+                <filter name="registration" string="Đăng ký môn"
+                        domain="[('event_type', 'in', ('reg_success', 'reg_rejected', 'waitlisted', 'waitlist_promoted', 'waitlist_rejected'))]"/>
+                <filter name="exam" string="Điều kiện dự thi" domain="[('event_type', '=', 'exam_ineligible')]"/>
+                <filter name="warning" string="Cảnh báo học vụ" domain="[('event_type', '=', 'early_warning')]"/>
+                <separator/>
+                <filter name="notice_date" string="Thời điểm" date="notice_date"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_student" string="Sinh viên" context="{'group_by': 'student_id'}"/>
+                    <filter name="group_event" string="Loại sự kiện" context="{'group_by': 'event_type'}"/>
+                    <filter name="group_read" string="Trạng thái đọc" context="{'group_by': 'is_read'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_univ_sms_student_notice" model="ir.actions.act_window">
+        <field name="name">Thông báo cá nhân</field>
+        <field name="res_model">univ.sms.student.notice</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_univ_sms_student_notice_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Chưa có thông báo cá nhân nào</p>
+            <p>Thông báo được hệ thống tự tạo khi có sự kiện: đăng ký môn, danh sách chờ,
+               điều kiện dự thi, cảnh báo học vụ. Sinh viên xem tại cổng thông tin
+               (/my/academic/notices).</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_univ_sms_student_notice"
+              name="Thông báo cá nhân"
+              parent="menu_univ_sms_student_mgmt"
+              action="action_univ_sms_student_notice"
+              groups="univ_sms_base.group_univ_academic_officer"
+              sequence="30"/>
+</odoo>

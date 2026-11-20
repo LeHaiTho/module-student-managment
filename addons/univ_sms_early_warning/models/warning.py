@@ -1,6 +1,7 @@
 import logging
 from collections import defaultdict
 
+from markupsafe import Markup
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -163,7 +164,46 @@ class UnivSmsWarning(models.Model):
         self._check_open_duplicates_before_create(vals_list)
         records = super().create(vals_list)
         records._notify_advisor()
+        records._post_advisor_message()
+        records._notify_student_notice()
         return records
+
+    def _post_advisor_message(self):
+        """F4: ghi chatter (ghi chú nội bộ) nhắc cố vấn phụ trách. Lỗi không chặn việc tạo cảnh báo.
+
+        ``mail_notify_force_send=False``: email (nếu có) chỉ xếp hàng, không gửi ngay.
+        """
+        for rec in self:
+            partner = rec.advisor_partner_id
+            if not partner or rec.state == 'closed':
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    rec.sudo().with_context(mail_notify_force_send=False).message_post(
+                        body=Markup(_('<p>Cảnh báo sớm <b>%s</b> được giao cho cố vấn %s.</p>'))
+                        % (rec.name, partner.display_name),
+                        partner_ids=partner.ids,
+                        message_type='comment',
+                        subtype_xmlid='mail.mt_note',
+                    )
+            except Exception:
+                _logger.exception('Không ghi được chatter cho cảnh báo %s', rec.id)
+
+    def _notify_student_notice(self):
+        """F4: thông báo cá nhân cho sinh viên khi có cảnh báo mới (lời lẽ trung tính)."""
+        Notice = self.env['univ.sms.student.notice']
+        labels = dict(WARNING_TYPES)
+        for rec in self:
+            if rec.state == 'closed':
+                continue
+            label = labels.get(rec.warning_type, '')
+            body = _('Nhà trường ghi nhận một dấu hiệu cần lưu ý trong quá trình học tập của bạn '
+                     '(%s). Cố vấn học tập sẽ liên hệ để hỗ trợ; bạn cũng có thể chủ động '
+                     'liên hệ cố vấn hoặc phòng đào tạo.') % label
+            if rec.evidence_text:
+                body = '%s\n\n%s\n%s' % (body, _('Chi tiết:'), rec.evidence_text)
+            Notice._notify(rec.student_id, 'early_warning',
+                           _('Cảnh báo học vụ: %s') % label, body, rec)
 
     _STAFF_ONLY_FIELDS = ('student_id', 'advisor_partner_id', 'warning_type',
                           'evidence_value', 'evidence_text', 'detected_at')

@@ -103,6 +103,7 @@ class UnivSmsCourseOffering(models.Model):
                 now = fields.Datetime.now()
                 if reason:
                     entry.write({'state': 'rejected', 'note': reason[1], 'processed_date': now})
+                    entry._notify_waitlist_result()
                     continue
                 message = _('Được nhận từ danh sách chờ vào lớp %s.') % offering.name
                 try:
@@ -113,7 +114,9 @@ class UnivSmsCourseOffering(models.Model):
                     _logger.info('Waitlist %s rejected on promotion: %s', entry.id, exc)
                     msg = exc.args[0] if exc.args else str(exc)
                     entry.write({'state': 'rejected', 'note': msg, 'processed_date': now})
+                    entry._notify_waitlist_result()
                     continue
                 entry.write({'state': 'promoted', 'registration_id': reg.id, 'processed_date': now})
+                entry._notify_waitlist_result()
                 promoted |= entry
         return promoted

@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class UnivSmsConductScore(models.Model):
@@ -24,19 +25,54 @@ class UnivSmsConductScore(models.Model):
         ('rejected', 'Bị trả về'),
     ], default='draft')
 
+    _sql_constraints = [
+        ('student_period_uniq', 'unique(student_id, period_id)',
+         'Mỗi sinh viên chỉ có một phiếu điểm rèn luyện cho một học kỳ!'),
+    ]
+
+    # ─── Workflow (kiểm tra phía server, không chỉ ẩn nút ở view) ──────────
+    def _state_label(self, state):
+        return dict(self._fields['state'].selection).get(state, state)
+
+    def _check_states(self, allowed, action_label):
+        for rec in self:
+            if rec.state not in allowed:
+                raise UserError(_(
+                    'Không thể %(action)s phiếu rèn luyện của %(student)s ở trạng thái "%(state)s".',
+                    action=action_label, student=rec.student_id.name or '',
+                    state=self._state_label(rec.state)))
+
+    def _check_group(self, xmlids, message):
+        if self.env.su:
+            return
+        user = self.env.user
+        if not any(user.has_group(x) for x in xmlids):
+            raise AccessError(message)
+
     def action_submit(self):
+        self._check_states(('draft', 'rejected'), _('gửi'))
         self.write({'state': 'submitted'})
 
     def action_advisor_approve(self):
+        self._check_group(('univ_sms_base.group_univ_advisor',),
+                          _('Chỉ cố vấn học tập mới được duyệt cấp CVHT.'))
+        self._check_states(('submitted',), _('duyệt cấp CVHT'))
         self.write({'state': 'advisor_approved'})
 
     def action_dean_approve(self):
+        self._check_group(('univ_sms_base.group_univ_dean',),
+                          _('Chỉ trưởng khoa mới được duyệt cấp khoa.'))
+        self._check_states(('advisor_approved',), _('duyệt cấp khoa'))
         self.write({'state': 'dean_approved'})
 
     def action_reject(self):
+        self._check_group(('univ_sms_base.group_univ_advisor', 'univ_sms_base.group_univ_dean'),
+                          _('Chỉ cố vấn học tập hoặc trưởng khoa mới được trả về phiếu rèn luyện.'))
+        self._check_states(('submitted', 'advisor_approved'), _('trả về'))
         self.write({'state': 'rejected'})
 
     def action_draft(self):
+        self._check_states(('rejected',), _('đưa về nháp'))
         self.write({'state': 'draft'})
 
     @api.depends('line_ids.self_score', 'line_ids.advisor_score', 'line_ids.final_score')
@@ -73,3 +109,15 @@ class UnivSmsConductScoreLine(models.Model):
     self_score = fields.Integer(string='SV tự chấm')
     advisor_score = fields.Integer(string='CVHT chấm')
     final_score = fields.Integer(string='Điểm cuối')
+
+    @api.constrains('self_score', 'advisor_score', 'final_score', 'criteria_id')
+    def _check_score_range(self):
+        for line in self:
+            max_score = line.criteria_id.max_score or 0
+            for fname in ('self_score', 'advisor_score', 'final_score'):
+                value = line[fname] or 0
+                if value < 0 or value > max_score:
+                    raise ValidationError(_(
+                        'Điểm "%(label)s" của tiêu chí "%(criteria)s" phải trong khoảng 0 đến %(max)s.',
+                        label=line._fields[fname].string, criteria=line.criteria_id.name,
+                        max=max_score))

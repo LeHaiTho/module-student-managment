@@ -166,7 +166,10 @@ class UnivSmsStudent(models.Model):
         for vals in vals_list:
             if vals.get('student_code', 'New') == 'New':
                 seq_num = self.env['ir.sequence'].next_by_code('univ.sms.student') or '0000'
-                year = str(fields.Date.today().year)[2:]  # 2 số cuối năm, VD: '24'
+                # 2 số cuối năm nhập học (theo niên khóa nếu có), VD: '24'
+                cohort = self.env['univ.sms.academic.year'].browse(vals.get('academic_year_id'))
+                year_value = cohort.date_start.year if cohort and cohort.date_start else fields.Date.today().year
+                year = str(year_value)[2:]
                 program = self.env['univ.sms.program'].browse(vals.get('program_id'))
                 prog_code = (program.code or 'SV')[:5].upper() if program else 'SV'
                 vals['student_code'] = f"{year}{prog_code}{seq_num}"

@@ -1,8 +1,9 @@
-from odoo import models, fields
+from odoo import _, fields, models
 
 
 class UnivSmsMilitaryService(models.Model):
     _name = 'univ.sms.military.service'
+    _inherit = ['univ.sms.workflow.guard.mixin']
     _description = 'Khai báo nghĩa vụ quân sự'
     _order = 'student_id'
 
@@ -24,13 +25,17 @@ class UnivSmsMilitaryService(models.Model):
     ], default='draft')
 
     def action_submit(self):
+        self._check_states(('draft',), _('nộp'))
         self.write({'state': 'submitted'})
 
     def action_approve(self):
+        self._check_states(('submitted',), _('duyệt'))
         self.write({'state': 'approved'})
 
     def action_reject(self):
+        self._check_states(('submitted',), _('từ chối'))
         self.write({'state': 'rejected'})
 
     def action_draft(self):
+        self._check_states(('submitted', 'rejected', 'approved'), _('đặt lại nháp'))
         self.write({'state': 'draft'})

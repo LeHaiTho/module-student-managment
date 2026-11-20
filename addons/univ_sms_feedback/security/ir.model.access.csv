@@ -3,4 +3,4 @@ access_feedback_admin,feedback.admin,model_univ_sms_feedback,univ_sms_base.group
 access_feedback_officer,feedback.officer,model_univ_sms_feedback,univ_sms_base.group_univ_academic_officer,1,1,0,0
 access_feedback_student_affairs,feedback.student_affairs,model_univ_sms_feedback,univ_sms_base.group_univ_student_affairs_office,1,1,0,0
 access_feedback_finance,feedback.finance,model_univ_sms_feedback,univ_sms_base.group_univ_finance_office,1,1,0,0
-access_feedback_portal,feedback.portal,model_univ_sms_feedback,base.group_portal,1,1,1,0
+access_feedback_portal,feedback.portal,model_univ_sms_feedback,base.group_portal,1,0,0,0

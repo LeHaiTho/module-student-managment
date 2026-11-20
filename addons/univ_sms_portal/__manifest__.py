@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Portal',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Education',
     'summary': 'Student Portal for University Student Management System',
     'author': 'Your Company',
@@ -23,6 +23,7 @@
         'views/portal_templates.xml',
         'views/portal_phase67_templates.xml',
         'views/portal_attendance_qr_templates.xml',
+        'views/portal_notice_templates.xml',
     ],
     'installable': True,
     'application': False,

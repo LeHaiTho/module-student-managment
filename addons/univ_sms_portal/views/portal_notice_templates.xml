@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Owned by Agent F4 (personal notices). -->
+
+    <!-- Trang danh sách thông báo cá nhân: /my/academic/notices -->
+    <template id="portal_notices" name="Thông báo cá nhân">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="o_portal_my_doc_table o_univ_sms_notices">
+                <t t-if="not student">
+                    <div class="alert alert-warning">
+                        Tài khoản này chưa được liên kết với hồ sơ sinh viên nào.
+                    </div>
+                </t>
+                <t t-else="">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <h3 class="mb-0">
+                            Thông báo của bạn
+                            <span t-if="unread_count" class="badge rounded-pill bg-danger align-middle fs-6"
+                                  id="univ_notice_unread_count"><t t-esc="unread_count"/> chưa đọc</span>
+                        </h3>
+                        <div class="d-flex gap-2">
+                            <a href="/my/academic" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-1"/>Trang học tập
+                            </a>
+                            <form t-if="unread_count" action="/my/academic/notices/read-all" method="post" class="d-inline">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="fa fa-check-square-o me-1"/>Đánh dấu tất cả đã đọc
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div t-if="marked == 'ok'" class="alert alert-success py-2">Đã cập nhật trạng thái đọc.</div>
+                    <div t-elif="marked == 'denied'" class="alert alert-danger py-2">Không tìm thấy thông báo.</div>
+
+                    <div t-if="not notices" class="alert alert-light border text-center text-muted">
+                        Bạn chưa có thông báo nào.
+                    </div>
+
+                    <div t-else="" class="list-group">
+                        <t t-foreach="notices" t-as="notice">
+                            <div t-attf-class="list-group-item py-3 #{'' if notice.is_read else 'list-group-item-primary border-start border-4 border-primary'}"
+                                 t-att-data-notice-id="notice.id">
+                                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+                                    <div class="flex-grow-1" style="min-width: 0;">
+                                        <div class="mb-1">
+                                            <span t-if="not notice.is_read" class="badge bg-danger me-1">Mới</span>
+                                            <span t-attf-class="badge me-1 #{
+                                                'bg-success' if notice.event_type in ('reg_success', 'waitlist_promoted') else
+                                                'bg-warning text-dark' if notice.event_type in ('waitlisted', 'early_warning') else
+                                                'bg-danger' if notice.event_type in ('reg_rejected', 'waitlist_rejected', 'exam_ineligible') else
+                                                'bg-secondary'}" t-field="notice.event_type"/>
+                                        </div>
+                                        <h5 t-attf-class="mb-1 text-break #{'fw-bold' if not notice.is_read else 'fw-normal'}">
+                                            <t t-esc="notice.title"/>
+                                        </h5>
+                                        <small class="text-muted">
+                                            <i class="fa fa-clock-o me-1"/><span t-field="notice.notice_date"/>
+                                        </small>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <a t-att-href="notice._portal_url()" class="btn btn-sm btn-outline-primary">Xem chi tiết</a>
+                                        <form t-if="not notice.is_read"
+                                              t-attf-action="/my/academic/notices/#{notice.id}/read" method="post">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="page" t-att-value="pager and pager['page']['num'] or 1"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary">Đã đọc</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <p t-if="notice.body" class="mb-0 mt-2 text-break" style="white-space: pre-line;"><t t-esc="notice.body"/></p>
+                            </div>
+                        </t>
+                    </div>
+                    <div t-if="pager and pager['page_count'] > 1" class="mt-3">
+                        <t t-call="portal.pager"/>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Lối vào + số thông báo chưa đọc trên trang học tập (/my/academic). -->
+    <template id="portal_academic_home_notices" name="Thông báo trên trang học tập"
+              inherit_id="univ_sms_portal.portal_academic_home">
+        <xpath expr="//t[@t-call='portal.portal_layout']/*[1]" position="before">
+            <t t-set="univ_notice_unread"
+               t-value="request.env['univ.sms.student.notice']._portal_unread_count(request.env.user) if student else 0"/>
+            <div t-if="student"
+                 t-attf-class="o_univ_sms_notice_entry alert d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3 mb-3 #{'alert-warning' if univ_notice_unread else 'alert-light border'}">
+                <span>
+                    <i class="fa fa-bell me-1"/>
+                    <t t-if="univ_notice_unread">Bạn có <strong t-esc="univ_notice_unread"/> thông báo chưa đọc.</t>
+                    <t t-else="">Không có thông báo mới.</t>
+                </span>
+                <a href="/my/academic/notices" class="btn btn-sm btn-primary">
+                    Thông báo (<t t-esc="univ_notice_unread"/>)
+                </a>
+            </div>
+        </xpath>
+    </template>
+</odoo>

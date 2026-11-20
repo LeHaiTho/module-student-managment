@@ -305,35 +305,7 @@ class UnivSmsFeeInvoice(models.Model):
         for record in self:
             record.state = 'draft'
 
-    def action_create_account_move(self):
-        """Tạo hóa đơn kế toán (account.move)"""
-        self.ensure_one()
-        if self.account_move_id:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': 'Hóa đơn kế toán',
-                'res_model': 'account.move',
-                'view_mode': 'form',
-                'res_id': self.account_move_id.id,
-            }
-
-        move_vals = {
-            'move_type': 'out_invoice',
-            'partner_id': self.partner_id.id,
-            'invoice_date': self.invoice_date,
-        }
-        move = self.env['account.move'].create(move_vals)
-
-        if self.line_ids:
-            for line in self.line_ids:
-                self.env['account.move.line'].create({
-                    'move_id': move.id,
-                    'name': line.name,
-                    'quantity': line.quantity,
-                    'price_unit': line.price_unit,
-                })
-
-        self.account_move_id = move.id
+    def _account_move_action(self, move):
         return {
             'type': 'ir.actions.act_window',
             'name': 'Hóa đơn kế toán',
@@ -341,6 +313,77 @@ class UnivSmsFeeInvoice(models.Model):
             'view_mode': 'form',
             'res_id': move.id,
         }
+
+    def _prepare_account_move_lines(self, income_account):
+        """Dòng hóa đơn kế toán: lấy từ chi tiết hóa đơn, nếu không có thì một dòng tổng."""
+        self.ensure_one()
+        lines = []
+        for line in self.line_ids:
+            lines.append({
+                'name': line.name,
+                'quantity': line.quantity or 1.0,
+                'price_unit': line.price_unit,
+                'account_id': income_account.id,
+                'tax_ids': [(6, 0, [])],
+            })
+        if not lines:
+            lines.append({
+                'name': 'Học phí %s - %s' % (self.term_id.name or '', self.student_id.name or ''),
+                'quantity': 1.0,
+                'price_unit': self.amount_total,
+                'account_id': income_account.id,
+                'tax_ids': [(6, 0, [])],
+            })
+        return [(0, 0, vals) for vals in lines]
+
+    def action_create_account_move(self):
+        """Tạo hóa đơn kế toán (account.move, out_invoice). Gọi lại nhiều lần an toàn."""
+        self.ensure_one()
+        if self.account_move_id:
+            return self._account_move_action(self.account_move_id)
+        user = self.env.user
+        if not self.env.su and not (user.has_group('univ_sms_base.group_univ_admin')
+                                    or user.has_group('univ_sms_base.group_univ_finance_office')):
+            raise UserError('Chỉ Phòng Tài chính hoặc quản trị viên mới được tạo hóa đơn kế toán.')
+        if self.state not in ('confirmed', 'paid'):
+            raise UserError('Chỉ tạo hóa đơn kế toán cho hóa đơn học phí đã xác nhận.')
+        if self.amount_total <= 0 and not self.line_ids:
+            raise UserError('Hóa đơn học phí chưa có số tiền nên không thể tạo hóa đơn kế toán.')
+
+        # Quyền SMS đã kiểm tra ở trên; nghiệp vụ kế toán chạy bằng sudo vì
+        # nhân viên SMS không nhất thiết có nhóm quyền Kế toán.
+        company = self.env.company
+        Journal = self.env['account.journal'].sudo()
+        journal = Journal.search([('type', '=', 'sale'), ('company_id', '=', company.id)], limit=1)
+        if not journal:
+            raise UserError(
+                'Chưa cấu hình sổ nhật ký bán hàng cho công ty "%s". Vui lòng cài đặt hệ thống '
+                'tài khoản kế toán (Kế toán > Cấu hình) trước khi tạo hóa đơn kế toán.' % company.name)
+        income_account = journal.default_account_id
+        if not income_account:
+            income_account = self.env['account.account'].sudo().search([
+                ('company_id', '=', company.id),
+                ('account_type', '=', 'income'),
+                ('deprecated', '=', False),
+            ], limit=1)
+        if not income_account:
+            raise UserError(
+                'Chưa có tài khoản doanh thu cho công ty "%s". Vui lòng cấu hình tài khoản '
+                'doanh thu mặc định cho sổ nhật ký bán hàng.' % company.name)
+
+        currency = self.currency_id if self.currency_id and self.currency_id.active else company.currency_id
+        move = self.env['account.move'].sudo().create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_id.id,
+            'invoice_date': self.invoice_date or fields.Date.context_today(self),
+            'journal_id': journal.id,
+            'currency_id': currency.id,
+            'ref': self.name,
+            'invoice_origin': self.name,
+            'invoice_line_ids': self._prepare_account_move_lines(income_account),
+        })
+        self.account_move_id = move.id
+        return self._account_move_action(move)
 
 
 class UnivSmsFeeInvoiceLine(models.Model):
