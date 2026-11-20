@@ -83,3 +83,50 @@ Push lên nhánh deploy để Render tự build. Nếu có thay đổi model, đ
 | Neon free 0.5GB | Dung lượng | Dữ liệu demo khoảng 100MB |
 | Phiên đăng nhập lưu trên đĩa tạm | Restart thì người dùng phải đăng nhập lại | Chấp nhận cho demo |
 | Không có SMTP | Email không gửi đi | Thông báo nằm trong hệ thống (portal, activity) |
+
+## 6. Triển khai trên server công ty (Windows + Docker Desktop + Cloudflare Tunnel)
+
+Mô hình giống server DIAMOND VN: Odoo chạy bằng Docker, **chỉ nghe ở 127.0.0.1**, còn
+Cloudflare Tunnel đưa ra Internet qua HTTPS. Không mở cổng nào trên firewall hay router.
+
+```
+Người dùng ─HTTPS─> Cloudflare ─tunnel─> cloudflared.exe (server) ─> 127.0.0.1:8070 (Odoo) ─> Postgres (Docker)
+```
+
+### Cài lần đầu
+```powershell
+copy .env.prod.example .env.prod      # rồi điền mật khẩu dài ngẫu nhiên
+powershell -ExecutionPolicy Bypass -File tools\prod_init.ps1 -DumpFile backups\univ_sms_demo_deploy.dump
+powershell -ExecutionPolicy Bypass -File tools\prod_tunnel.ps1
+```
+* `prod_init.ps1`: build image, khởi động Postgres, nạp database demo nếu chưa có (đã có thì giữ nguyên), khởi động Odoo, đợi health check.
+* `prod_tunnel.ps1`: mở quick tunnel, in link `https://….trycloudflare.com`, ghi link vào `backups\PUBLIC_URL.txt` và cập nhật `web.base.url`.
+* Mã QR điểm danh lấy đúng địa chỉ giảng viên đang dùng (kể cả HTTPS sau tunnel), nên vẫn đúng khi link đổi.
+
+### Quick tunnel và named tunnel
+| | Quick tunnel (mặc định) | Named tunnel (khuyên dùng lâu dài) |
+|---|---|---|
+| Cần gì | Không cần tài khoản | Tài khoản Cloudflare + tên miền trên Cloudflare |
+| Link | Đổi mỗi lần chạy lại tunnel / khởi động lại máy | Cố định, ví dụ `https://sms.ten-mien.com` |
+| Cài | `tools\prod_tunnel.ps1` | Dashboard Zero Trust → Tunnels → Public hostname → `http://127.0.0.1:8070`; `cloudflared.exe service install <TOKEN>`; rồi `tools\prod_tunnel.ps1 -Hostname sms.ten-mien.com` |
+
+### Cập nhật phiên bản
+```powershell
+git pull
+powershell -ExecutionPolicy Bypass -File tools\prod_backup.ps1      # luôn backup trước
+docker compose -f docker-compose.prod.yml --env-file .env.prod build odoo
+# Nếu bản cập nhật có đổi model: đặt ODOO_UPDATE_MODULES=all trong .env.prod cho lần khởi động này
+docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --force-recreate odoo
+```
+Code module nằm trong image ở `/opt/univ_sms/addons`. Không đặt ở `/mnt/extra-addons`: image gốc khai báo `VOLUME` tại đó, Docker sẽ giữ volume cũ và container mới vẫn chạy code cũ.
+
+### Backup
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\prod_backup.ps1            # chạy ngay
+powershell -ExecutionPolicy Bypass -File tools\prod_backup.ps1 -Schedule  # lịch 02:00 hằng ngày, giữ 14 bản
+```
+Đã diễn tập khôi phục ngày 20/11/2026: nạp bản backup vào database tạm, số sinh viên, đăng ký, dòng điểm danh và người dùng khớp 100%.
+
+### Khởi động lại máy
+* Docker Desktop: bật "Start Docker Desktop when you sign in". Container có `restart: unless-stopped` nên tự chạy lại.
+* Quick tunnel không tự chạy lại: chạy `tools\prod_tunnel.ps1` sau khi đăng nhập, hoặc đặt Task Scheduler "At log on". Named tunnel cài dạng Windows service thì tự chạy.

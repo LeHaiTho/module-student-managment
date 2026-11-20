@@ -37,7 +37,7 @@ print('[setup] lang/tz set for', len(users), 'users')
 
 company = env.ref('base.main_company')
 vals = {'name': SCHOOL_NAME}
-icon = '/mnt/extra-addons/univ_sms_base/static/description/school_logo.png'
+icon = next((p for p in ('/opt/univ_sms/addons/univ_sms_base/static/description/school_logo.png', '/mnt/extra-addons/univ_sms_base/static/description/school_logo.png') if os.path.exists(p)), '')
 if os.path.exists(icon):
     with open(icon, 'rb') as f:
         vals['logo'] = base64.b64encode(f.read())

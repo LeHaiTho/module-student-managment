@@ -127,6 +127,27 @@ class UnivSmsAttendanceSession(models.Model):
 
     # ─── Mở / đóng phiên ──────────────────────────────────────────────────
     @api.model
+    def _get_public_base_url(self):
+        """Địa chỉ public để sinh QR.
+
+        Ưu tiên địa chỉ mà giảng viên đang truy cập (Host / X-Forwarded-Host qua
+        proxy_mode), để QR luôn đúng khi chạy sau Cloudflare quick tunnel có URL đổi
+        mỗi lần khởi động. Không có request (cron, shell) thì dùng web.base.url.
+        """
+        try:
+            from odoo.http import request
+            if request and request.httprequest:
+                url = request.httprequest.host_url.rstrip('/')
+                # cloudflared gửi X-Forwarded-Proto nhưng không gửi X-Forwarded-Host,
+                # nên ProxyFix của Odoo không áp dụng: tự đổi sang https khi cần.
+                proto = request.httprequest.headers.get('X-Forwarded-Proto', '')
+                if proto.split(',')[0].strip() == 'https' and url.startswith('http://'):
+                    url = 'https://' + url[len('http://'):]
+                return url
+        except RuntimeError:
+            pass
+        return self.env['ir.config_parameter'].sudo().get_param('web.base.url', '').rstrip('/')
+
     def _create_for_sheet(self, sheet, late_after_minutes=5, duration_minutes=MAX_SESSION_MINUTES):
         """Tạo phiên đang mở cho phiếu. Trả về (session, token thô).
 
@@ -134,7 +155,7 @@ class UnivSmsAttendanceSession(models.Model):
         được) để hiển thị lại mã QR, và bị xóa khi đóng phiên.
         """
         token = secrets.token_urlsafe(32)
-        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', '').rstrip('/')
+        base_url = self._get_public_base_url()
         now = fields.Datetime.now()
         session = self.create({
             'sheet_id': sheet.id,

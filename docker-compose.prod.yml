@@ -1,0 +1,47 @@
+# Production trên server công ty (Windows + Docker Desktop), publish qua Cloudflare Tunnel.
+#
+#   docker compose -f docker-compose.prod.yml --env-file .env.prod up -d --build
+#
+# - Tách hẳn khỏi docker-compose.yml (dev): project, volume, cổng đều khác.
+# - Odoo chỉ nghe 127.0.0.1:${ODOO_PORT}; KHÔNG mở cổng ra mạng. Cloudflare Tunnel
+#   (cloudflared trên máy host) trỏ tới http://127.0.0.1:${ODOO_PORT}.
+# - Postgres không publish cổng ra ngoài.
+name: univ-sms-prod
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Đặt DB_PASSWORD trong .env.prod}
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  odoo:
+    build: .
+    image: univ-sms-odoo:prod
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://odoo:${DB_PASSWORD}@db:5432/${DB_NAME:-univ_sms}
+      ODOO_MASTER_PASSWORD: ${ODOO_MASTER_PASSWORD:?Đặt ODOO_MASTER_PASSWORD trong .env.prod}
+      ODOO_UPDATE_MODULES: ${ODOO_UPDATE_MODULES:-}
+      PORT: "8069"
+    ports:
+      - "127.0.0.1:${ODOO_PORT:-8070}:8069"
+    volumes:
+      - odoo_data:/var/lib/odoo
+    mem_limit: 2g
+
+volumes:
+  pgdata:
+  odoo_data:
