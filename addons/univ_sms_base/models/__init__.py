@@ -3,3 +3,4 @@ from . import department
 from . import program
 from . import subject
 from . import academic_period
+from . import ir_http

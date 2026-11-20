@@ -21,6 +21,8 @@ docker compose run --rm -T odoo odoo -c /etc/odoo/odoo.conf -d "$DB" -i "$MODS" 
 echo "[2/4] Nạp dữ liệu demo"
 docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d "$DB" --no-http \
   < tools/seed_demo.py >> "test-results/build_$DB.log" 2>&1
+echo "[2b] Cấu hình tiếng Việt, tên trường, tắt đăng ký Odoo mặc định"
+docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d "$DB" --no-http   < tools/setup_site.py >> "test-results/build_$DB.log" 2>&1
 echo "[3/4] Lưu file đính kèm trong database"
 docker compose run --rm -T odoo odoo shell -c /etc/odoo/odoo.conf -d "$DB" --no-http >> "test-results/build_$DB.log" 2>&1 <<'PY'
 env['ir.config_parameter'].sudo().set_param('ir_attachment.location', 'db')
