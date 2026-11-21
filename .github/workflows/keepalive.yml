@@ -1,6 +1,6 @@
-# Giá»¯ dá»‹ch vá»¥ Render free luÃ´n thá»©c (Render ngá»§ sau 15 phÃºt khÃ´ng cÃ³ truy cáº­p).
-# Lá»‹ch GitHub khÃ´ng Ä‘áº£m báº£o Ä‘Ãºng giá», nÃªn má»—i láº§n cháº¡y sáº½ ping liÃªn tá»¥c ~5h50;
-# láº§n cháº¡y má»›i há»§y láº§n cÅ©, luÃ´n cÃ³ Ä‘Ãºng má»™t lÆ°á»£t Ä‘ang ping.
+# Keep the Render free web service awake (Render sleeps after 15 minutes without traffic).
+# GitHub schedules are best effort, so each run pings continuously for about 5h50m;
+# a newer run cancels the older one, so one run is always pinging.
 name: keep-alive
 
 on:
