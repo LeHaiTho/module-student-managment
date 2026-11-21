@@ -18,3 +18,4 @@ addons/**/*.py[cod]
 
 backups/
 !.env.prod.example
+docs/demo/

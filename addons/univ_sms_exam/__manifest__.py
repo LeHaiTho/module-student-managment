@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Exam',
-    'version': '17.0.1.1.0',
+    'version': '17.0.1.2.0',
     'category': 'Education',
     'summary': 'Quản lý kỳ thi, điểm số và bảng điểm',
     'author': 'Your Company',

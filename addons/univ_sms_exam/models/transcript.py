@@ -80,9 +80,11 @@ class UnivSmsTranscript(models.Model):
     def _compute_cumulative_gpa(self):
         for record in self:
             if record.student_id:
+                # Chỉ tính các học kỳ từ kỳ này trở về trước
                 all_transcripts = self.search([
                     ('student_id', '=', record.student_id.id),
-                ])
+                ]).filtered(lambda t: not record.term_id.date_start or not t.term_id.date_start
+                            or t.term_id.date_start <= record.term_id.date_start)
                 if all_transcripts:
                     total_credits = sum(
                         sum(t.line_ids.mapped('credit')) for t in all_transcripts

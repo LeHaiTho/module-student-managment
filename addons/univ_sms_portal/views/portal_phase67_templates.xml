@@ -29,7 +29,7 @@
                     <tbody>
                         <tr t-foreach="certificate_requests" t-as="req">
                             <td><t t-esc="req.certificate_type_id.name"/></td>
-                            <td><t t-esc="req.request_date"/></td>
+                            <td><t t-esc="req.request_date and req.request_date.strftime('%d/%m/%Y') or ''"/></td>
                             <td><t t-esc="'{:,.0f}'.format(req.fee_amount or 0)"/> đ</td>
                             <td><t t-esc="dict(req._fields['fee_payment_state'].selection).get(req.fee_payment_state)"/></td>
                             <td><span class="badge bg-secondary"><t t-esc="dict(req._fields['state'].selection).get(req.state)"/></span></td>
@@ -68,7 +68,7 @@
                     <thead><tr><th>Ngày khai báo</th><th>Tình trạng NVQS</th><th>Trạng thái duyệt</th></tr></thead>
                     <tbody>
                         <tr t-foreach="military_services" t-as="line">
-                            <td><t t-esc="line.declared_date"/></td>
+                            <td><t t-esc="line.declared_date and line.declared_date.strftime('%d/%m/%Y') or ''"/></td>
                             <td><t t-esc="dict(line._fields['registration_status'].selection).get(line.registration_status)"/></td>
                             <td><span class="badge bg-secondary"><t t-esc="dict(line._fields['state'].selection).get(line.state)"/></span></td>
                         </tr>
@@ -83,8 +83,8 @@
                     <tbody>
                         <tr t-foreach="health_insurances" t-as="ins">
                             <td><t t-esc="ins.insurance_code"/></td>
-                            <td><t t-esc="ins.date_start"/></td>
-                            <td><t t-esc="ins.date_end"/></td>
+                            <td><t t-esc="ins.date_start and ins.date_start.strftime('%d/%m/%Y') or ''"/></td>
+                            <td><t t-esc="ins.date_end and ins.date_end.strftime('%d/%m/%Y') or ''"/></td>
                             <td><t t-esc="dict(ins._fields['payment_state'].selection).get(ins.payment_state)"/></td>
                             <td><t t-esc="dict(ins._fields['state'].selection).get(ins.state)"/></td>
                         </tr>
@@ -100,7 +100,7 @@
                         <tr t-foreach="residences" t-as="res">
                             <td><t t-esc="dict(res._fields['residence_type'].selection).get(res.residence_type)"/></td>
                             <td><t t-esc="res.address"/></td>
-                            <td><t t-esc="res.effective_date"/></td>
+                            <td><t t-esc="res.effective_date and res.effective_date.strftime('%d/%m/%Y') or ''"/></td>
                             <td><t t-esc="dict(res._fields['state'].selection).get(res.state)"/></td>
                         </tr>
                         <tr t-if="not residences"><td colspan="4" class="text-center text-muted">Chưa có dữ liệu cư trú.</td></tr>
@@ -147,7 +147,7 @@
                 </t>
                 <div t-foreach="surveys" t-as="survey" class="border rounded p-3 mt-3">
                     <h5><t t-esc="survey.name"/></h5>
-                    <p class="text-muted mb-2"><t t-esc="survey.survey_type_id.name"/> | Hạn: <t t-esc="survey.date_end"/></p>
+                    <p class="text-muted mb-2"><t t-esc="survey.survey_type_id.name"/> | Hạn: <t t-esc="survey.date_end and survey.date_end.strftime('%d/%m/%Y') or ''"/></p>
                     <t t-if="survey.id in answered_ids">
                         <span class="badge bg-success">Đã gửi phản hồi</span>
                     </t>

@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Portal',
-    'version': '17.0.1.1.0',
+    'version': '17.0.1.2.0',
     'category': 'Education',
     'summary': 'Student Portal for University Student Management System',
     'author': 'Your Company',
@@ -18,6 +18,7 @@
         'univ_sms_conduct',
         'univ_sms_survey',
         'univ_sms_feedback',
+        'univ_sms_notification',
     ],
     'data': [
         'views/portal_templates.xml',

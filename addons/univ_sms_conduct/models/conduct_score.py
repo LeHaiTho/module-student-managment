@@ -7,7 +7,8 @@ class UnivSmsConductScore(models.Model):
     _description = 'Điểm rèn luyện sinh viên'
     _order = 'student_id'
 
-    student_id = fields.Many2one('univ.sms.student', required=True)
+    name = fields.Char(string='Phiếu rèn luyện', compute='_compute_name', store=True)
+    student_id = fields.Many2one('univ.sms.student', string='Sinh viên', required=True)
     period_id = fields.Many2one('univ.sms.term', required=True, string='Học kỳ đánh giá')
     line_ids = fields.One2many('univ.sms.conduct.score.line', 'conduct_score_id')
     self_total = fields.Integer(compute='_compute_totals', store=True, string='Tự chấm')
@@ -16,7 +17,7 @@ class UnivSmsConductScore(models.Model):
     classification = fields.Selection([
         ('excellent', 'Xuất sắc'), ('good', 'Tốt'), ('fair', 'Khá'),
         ('average', 'Trung bình'), ('weak', 'Yếu'), ('poor', 'Kém'),
-    ], compute='_compute_classification', store=True)
+    ], string='Xếp loại', compute='_compute_classification', store=True)
     state = fields.Selection([
         ('draft', 'SV đang chấm'),
         ('submitted', 'Đã gửi'),
@@ -57,12 +58,18 @@ class UnivSmsConductScore(models.Model):
         self._check_group(('univ_sms_base.group_univ_advisor',),
                           _('Chỉ cố vấn học tập mới được duyệt cấp CVHT.'))
         self._check_states(('submitted',), _('duyệt cấp CVHT'))
+        # Tiêu chí cố vấn chưa chấm (0) thì lấy điểm sinh viên tự chấm
+        for line in self.mapped('line_ids').filtered(lambda l: not l.advisor_score):
+            line.advisor_score = line.self_score
         self.write({'state': 'advisor_approved'})
 
     def action_dean_approve(self):
         self._check_group(('univ_sms_base.group_univ_dean',),
                           _('Chỉ trưởng khoa mới được duyệt cấp khoa.'))
         self._check_states(('advisor_approved',), _('duyệt cấp khoa'))
+        # Tiêu chí khoa chưa chấm (0) thì lấy điểm cố vấn đã duyệt, tránh xếp loại sai thành "Kém"
+        for line in self.mapped('line_ids').filtered(lambda l: not l.final_score):
+            line.final_score = line.advisor_score
         self.write({'state': 'dean_approved'})
 
     def action_reject(self):
@@ -81,6 +88,12 @@ class UnivSmsConductScore(models.Model):
             rec.self_total = sum(rec.line_ids.mapped('self_score'))
             rec.advisor_total = sum(rec.line_ids.mapped('advisor_score'))
             rec.final_total = sum(rec.line_ids.mapped('final_score'))
+
+    @api.depends('student_id.name', 'student_id.student_code', 'period_id.name')
+    def _compute_name(self):
+        for rec in self:
+            parts = [p for p in (rec.student_id.student_code, rec.student_id.name, rec.period_id.name) if p]
+            rec.name = 'Rèn luyện – ' + ' – '.join(parts) if parts else 'Phiếu rèn luyện'
 
     @api.depends('final_total')
     def _compute_classification(self):
@@ -104,8 +117,8 @@ class UnivSmsConductScoreLine(models.Model):
     _name = 'univ.sms.conduct.score.line'
     _description = 'Chi tiết điểm theo tiêu chí'
 
-    conduct_score_id = fields.Many2one('univ.sms.conduct.score', ondelete='cascade')
-    criteria_id = fields.Many2one('univ.sms.conduct.criteria', required=True)
+    conduct_score_id = fields.Many2one('univ.sms.conduct.score', string='Phiếu rèn luyện', ondelete='cascade')
+    criteria_id = fields.Many2one('univ.sms.conduct.criteria', string='Tiêu chí', required=True)
     self_score = fields.Integer(string='SV tự chấm')
     advisor_score = fields.Integer(string='CVHT chấm')
     final_score = fields.Integer(string='Điểm cuối')

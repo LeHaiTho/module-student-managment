@@ -58,8 +58,10 @@ class TestReports(ReportDataMixin, TransactionCase):
         self.assertIn('BẢNG ĐIỂM SINH VIÊN', html)
         self.assertIn('Môn BC A', html)
         self.assertNotIn('Môn BC B', html, 'Bảng điểm lộ điểm của SV khác')
+        self.assertEqual(html.count('Môn BC A'), 1, 'Mỗi môn chỉ một dòng điểm tổng kết')
+        self.assertIn('GPA học kỳ', html)
         html = self._render('transcript', self.st_empty)
-        self.assertIn('Chưa có dữ liệu điểm số', html)
+        self.assertIn('Chưa có dữ liệu điểm tổng kết', html)
 
     def test_transcript_as_lecturer_only_own_class(self):
         # Giảng viên lớp B in bảng điểm SV1 (học lớp A): không thấy điểm lớp A

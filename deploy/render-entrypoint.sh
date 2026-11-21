@@ -92,6 +92,41 @@ if [ "$DB_READY" = "no" ]; then
 elif [ -n "${ODOO_UPDATE_MODULES:-}" ]; then
     echo "Updating modules: ${ODOO_UPDATE_MODULES}" >&2
     odoo -c "$ODOO_RC" -d "$ODOO_DB_NAME" -u "$ODOO_UPDATE_MODULES" --stop-after-init
+else
+    # Tự nâng cấp các module univ_sms_* có version trong mã nguồn khác version đã cài
+    # (deploy bản mới có đổi model / view / dữ liệu mà không cần thao tác tay)
+    CHANGED="$(python3 - <<'PY'
+import ast, glob, os
+import psycopg2
+addons = '/opt/univ_sms/addons'
+code_versions = {}
+for manifest in glob.glob(os.path.join(addons, 'univ_sms_*', '__manifest__.py')):
+    with open(manifest, encoding='utf-8') as f:
+        data = ast.literal_eval(f.read())
+    code_versions[os.path.basename(os.path.dirname(manifest))] = data.get('version', '')
+try:
+    conn = psycopg2.connect(host=os.environ["DB_HOST"], port=os.environ["DB_PORT"],
+                            user=os.environ["DB_USER"], password=os.environ["DB_PASSWORD"],
+                            dbname=os.environ["ODOO_DB_NAME"], connect_timeout=20)
+    cur = conn.cursor()
+    cur.execute("SELECT name, latest_version, state FROM ir_module_module WHERE name LIKE 'univ_sms_%%'")
+    installed = {name: (ver or '', state) for name, ver, state in cur.fetchall()}
+    conn.close()
+except Exception:
+    installed = {}
+changed = []
+for name, ver in sorted(code_versions.items()):
+    db_ver, state = installed.get(name, ('', 'uninstalled'))
+    # Odoo lưu latest_version dạng "17.0.x.y.z" giống manifest
+    if state == 'installed' and db_ver and db_ver != ver:
+        changed.append(name)
+print(','.join(changed))
+PY
+)"
+    if [ -n "$CHANGED" ]; then
+        echo "Auto-upgrading changed modules: ${CHANGED}" >&2
+        odoo -c "$ODOO_RC" -d "$ODOO_DB_NAME" -u "$CHANGED" --stop-after-init
+    fi
 fi
 
 exec odoo -c "$ODOO_RC" -d "$ODOO_DB_NAME" "$@"

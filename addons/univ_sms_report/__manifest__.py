@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Reports & Dashboard',
-    'version': '17.0.1.1.0',
+    'version': '17.0.1.2.0',
     'category': 'Education',
     'summary': 'PDF Reports & Dashboard for University Student Management System',
     'author': 'Your Company',

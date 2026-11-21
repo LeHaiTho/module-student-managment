@@ -94,3 +94,18 @@ class TestConductScore(TransactionCase):
             score.with_user(self.advisor).action_dean_approve()
         score.with_user(self.dean).action_dean_approve()
         self.assertEqual(score.state, 'dean_approved')
+
+    def test_approval_cascade_fills_unscored_levels(self):
+        """Duyệt cấp trên khi chưa chấm lại: lấy điểm cấp dưới, không ra xếp loại "Kém" sai."""
+        big = self.env['univ.sms.conduct.criteria'].create({
+            'name': 'Tiêu chí tổng hợp', 'group_name': 'activity', 'max_score': 100})
+        score = self.env['univ.sms.conduct.score'].create({
+            'student_id': self.student.id, 'period_id': self.term2.id,
+            'line_ids': [(0, 0, {'criteria_id': big.id, 'self_score': 85})]})
+        self.assertIn('Rèn luyện', score.name)
+        score.action_submit()
+        score.with_user(self.advisor).action_advisor_approve()
+        self.assertEqual(score.advisor_total, 85)
+        score.with_user(self.dean).action_dean_approve()
+        self.assertEqual(score.final_total, 85)
+        self.assertEqual(score.classification, 'good')

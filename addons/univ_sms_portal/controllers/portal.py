@@ -417,13 +417,25 @@ class UnivSmsPortal(CustomerPortal):
     @route(['/my/academic/transcript'], type='http', auth='user', website=True)
     def portal_transcript(self, **kw):
         student = self._get_student()
-        results = request.env['univ.sms.exam.result'].sudo().search(
-            [('student_id', '=', student.id)],
-            order='term_id desc, subject_id',
-        ) if student else []
+        Transcript = request.env['univ.sms.transcript'].sudo()
+        Result = request.env['univ.sms.exam.result'].sudo()
+        transcripts = Transcript.browse()
+        results = Result.browse()
+        if student:
+            transcripts = Transcript.search([('student_id', '=', student.id)]).filtered(
+                lambda t: t.line_ids).sorted(
+                key=lambda t: (t.term_id.date_start or date.min, t.id), reverse=True)
+            # Học kỳ chưa có bảng điểm: chỉ hiện điểm các kỳ thi đã công bố (Hoàn thành)
+            results = Result.search([
+                ('student_id', '=', student.id),
+                ('exam_id.state', '=', 'done'),
+                ('term_id', 'not in', transcripts.mapped('term_id').ids),
+            ], order='term_id desc, subject_id, id')
         return request.render('univ_sms_portal.portal_transcript', {
             'student': student,
+            'transcripts': transcripts,
             'results': results,
+            'exam_types': dict(Result.env['univ.sms.exam']._fields['exam_type'].selection),
             'page_name': 'academic_transcript',
         })
 

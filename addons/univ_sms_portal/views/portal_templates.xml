@@ -232,33 +232,59 @@
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
             <div class="o_portal_my_doc_table">
                 <h3>Bảng điểm: <t t-esc="student.name"/></h3>
-                <div class="table-responsive">
-                <table class="table table-sm table-striped mt-3">
-                    <thead>
-                        <tr>
-                            <th>Môn học</th>
-                            <th>Học kỳ</th>
-                            <th>Điểm</th>
-                            <th>Kết quả</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- results là univ.sms.exam.result có related fields: subject_id, term_id, is_passed -->
-                        <tr t-foreach="results" t-as="res">
-                            <td><t t-esc="res.subject_id.name"/></td>
-                            <td><t t-esc="res.term_id.name"/></td>
-                            <td><t t-esc="res.score"/></td>
-                            <td>
-                                <span t-if="res.is_passed" class="badge bg-success">Đạt</span>
-                                <span t-else="" class="badge bg-danger">Không đạt</span>
-                            </td>
-                        </tr>
-                        <tr t-if="not results">
-                            <td colspan="4" class="text-center text-muted">Chưa có dữ liệu bảng điểm.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                </div>
+                <t t-if="not transcripts and not results">
+                    <p class="text-muted mt-3">Chưa có dữ liệu bảng điểm.</p>
+                </t>
+                <t t-if="results">
+                    <h5 class="mt-4">Điểm các kỳ thi đã công bố (học kỳ đang học)</h5>
+                    <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Môn học</th><th>Bài thi</th><th>Điểm</th><th>Kết quả</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="results" t-as="res">
+                                <td><t t-esc="res.subject_id.name"/></td>
+                                <td><t t-esc="exam_types.get(res.exam_id.exam_type, '')"/></td>
+                                <td><t t-esc="'%g' % res.score"/> / <t t-esc="'%g' % res.max_score"/></td>
+                                <td>
+                                    <span t-if="res.is_passed" class="badge bg-success">Đạt</span>
+                                    <span t-else="" class="badge bg-danger">Không đạt</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </t>
+                <t t-foreach="transcripts" t-as="tr">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline mt-4">
+                        <h5 class="mb-1">
+                            <t t-esc="tr.term_id.name"/>
+                            <small t-if="tr.term_id.academic_year_id" class="text-muted">– <t t-esc="tr.term_id.academic_year_id.name"/></small>
+                        </h5>
+                        <span class="small">GPA học kỳ: <strong><t t-esc="'%.2f' % tr.term_gpa"/></strong>
+                            · <t t-esc="dict(tr._fields['classification'].selection).get(tr.classification, '')"/></span>
+                    </div>
+                    <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr><th>Môn học</th><th class="text-center">TC</th><th class="text-center">Điểm</th><th class="text-center">Chữ</th><th>Kết quả</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="tr.line_ids.sorted(key=lambda l: l.subject_id.code or '')" t-as="line">
+                                <td><t t-esc="line.subject_id.name"/></td>
+                                <td class="text-center"><t t-esc="'%g' % line.credit"/></td>
+                                <td class="text-center"><t t-esc="'%.2f' % line.final_score"/></td>
+                                <td class="text-center"><t t-esc="line.grade_letter"/></td>
+                                <td>
+                                    <span t-if="line.final_score &gt;= 5.0" class="badge bg-success">Đạt</span>
+                                    <span t-else="" class="badge bg-danger">Không đạt</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </t>
             </div>
         </t>
     </template>
@@ -324,7 +350,7 @@
                         <!-- attendance_lines là univ.sms.attendance.line -->
                         <!-- Ngày lấy từ sheet_id.attendance_date, lớp từ sheet_id.class_id -->
                         <tr t-foreach="attendance_lines" t-as="att">
-                            <td><t t-esc="att.sheet_id.attendance_date"/></td>
+                            <td><t t-esc="att.sheet_id.attendance_date and att.sheet_id.attendance_date.strftime('%d/%m/%Y') or ''"/></td>
                             <td><t t-esc="att.sheet_id.class_id.name"/></td>
                             <td>
                                 <span t-attf-class="badge #{
@@ -717,7 +743,7 @@
         <head>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>Trường Đại học Công nghệ — Hệ thống Quản lý Sinh viên</title>
+            <title><t t-esc="request.env.company.sudo().name"/> — Hệ thống Quản lý Sinh viên</title>
             <link rel="stylesheet" type="text/css" href="/web/static/lib/bootstrap/dist/css/bootstrap.css"/>
             <style>
                 * { box-sizing: border-box; }
@@ -767,7 +793,7 @@
             <!-- ── NAVBAR ────────────────────────────────────────────── -->
             <nav class="univ-nav">
                 <div class="container d-flex justify-content-between align-items-center">
-                    <div class="brand">🎓 Trường Đại học Công nghệ</div>
+                    <div class="brand">🎓 <t t-esc="request.env.company.sudo().name"/></div>
                     <a href="/web/login?redirect=/my/academic" class="btn-login">Đăng nhập</a>
                 </div>
             </nav>
@@ -777,7 +803,7 @@
                 <div class="hero-inner container">
                     <div class="hero-logo">🎓</div>
                     <div class="hero-badge">Hệ thống Quản lý Sinh viên</div>
-                    <h1>Trường Đại học Công nghệ</h1>
+                    <h1><t t-esc="request.env.company.sudo().name"/></h1>
                     <p>Tra cứu thông tin học tập, đăng ký môn học và theo dõi hồ sơ sinh viên trực tuyến</p>
                     <div class="hero-btns">
                         <a href="/web/login?redirect=/my/academic" class="btn-cta">🔍 Tra cứu thông tin sinh viên</a>
@@ -839,7 +865,7 @@
                                         <div class="notif-body">
                                             <t t-esc="notification_snippets.get(notif.id, '')"/>
                                         </div>
-                                        <div class="notif-date">📅 <t t-esc="notif.publish_date"/></div>
+                                        <div class="notif-date">📅 <t t-esc="notif.publish_date and notif.publish_date.strftime('%d/%m/%Y') or ''"/></div>
                                     </div>
                                 </div>
                             </t>
@@ -886,7 +912,7 @@
                 <div class="container">
                     <div class="row g-4">
                         <div class="col-md-4">
-                            <div class="footer-brand">🎓 Trường Đại học Công nghệ</div>
+                            <div class="footer-brand">🎓 <t t-esc="request.env.company.sudo().name"/></div>
                             <p style="font-size:.88rem;line-height:1.6;">Đào tạo nguồn nhân lực chất lượng cao trong lĩnh vực CNTT và kỹ thuật.</p>
                         </div>
                         <div class="col-md-4">
@@ -907,7 +933,7 @@
                         </div>
                     </div>
                     <hr class="footer-hr"/>
-                    <div class="footer-copy">© 2024 Trường Đại học Công nghệ — Hệ thống Quản lý Sinh viên (SMS)</div>
+                    <div class="footer-copy">© <t t-esc="datetime.date.today().year"/> <t t-esc="request.env.company.sudo().name"/> — Hệ thống Quản lý Sinh viên (SMS)</div>
                 </div>
             </footer>
 

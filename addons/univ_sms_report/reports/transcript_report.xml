@@ -32,38 +32,55 @@
                             </div>
                         </div>
 
-                        <!-- Lấy điểm số từ exam.result (có related fields subject_id, term_id, is_passed) -->
-                        <t t-set="results" t-value="doc.env['univ.sms.exam.result'].search(
-                            [('student_id', '=', doc.id)],
-                            order='term_id, subject_id'
-                        )"/>
-
-                        <table class="table table-sm table-bordered">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Môn học</th>
-                                    <th>Học kỳ</th>
-                                    <th class="text-center">Điểm</th>
-                                    <th class="text-center">Kết quả</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="results" t-as="res">
-                                    <td><span t-esc="res_index + 1"/></td>
-                                    <td><span t-field="res.subject_id.name"/></td>
-                                    <td><span t-field="res.term_id.name"/></td>
-                                    <td class="text-center"><span t-field="res.score"/></td>
-                                    <td class="text-center">
-                                        <span t-if="res.is_passed" style="color:green;font-weight:bold;">Đạt</span>
-                                        <span t-else="" style="color:red;">Không đạt</span>
-                                    </td>
-                                </tr>
-                                <tr t-if="not results">
-                                    <td colspan="5" class="text-center text-muted">Chưa có dữ liệu điểm số.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <!-- Điểm tổng kết từng môn lấy từ bảng điểm (transcript), nhóm theo học kỳ -->
+                        <t t-set="transcripts" t-value="doc.env['univ.sms.transcript'].search(
+                            [('student_id', '=', doc.id)]).filtered(lambda t: t.line_ids).sorted(
+                            key=lambda t: (t.term_id.date_start or datetime.date.min, t.id))"/>
+                        <t t-if="not transcripts">
+                            <p class="text-center text-muted mt-4">Chưa có dữ liệu điểm tổng kết.</p>
+                        </t>
+                        <t t-set="acc_points" t-value="0.0"/>
+                        <t t-set="acc_credits" t-value="0.0"/>
+                        <t t-foreach="transcripts" t-as="tr">
+                            <t t-set="acc_points" t-value="acc_points + sum(l.grade_point * l.credit for l in tr.line_ids)"/>
+                            <t t-set="acc_credits" t-value="acc_credits + sum(tr.line_ids.mapped('credit'))"/>
+                            <h5 class="mt-4 mb-2">
+                                <t t-esc="tr.term_id.name"/>
+                                <t t-if="tr.term_id.academic_year_id"> – Năm học <t t-esc="tr.term_id.academic_year_id.name"/></t>
+                            </h5>
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:6%">STT</th>
+                                        <th style="width:14%">Mã môn</th>
+                                        <th>Môn học</th>
+                                        <th class="text-center" style="width:8%">TC</th>
+                                        <th class="text-center" style="width:12%">Điểm</th>
+                                        <th class="text-center" style="width:10%">Điểm chữ</th>
+                                        <th class="text-center" style="width:12%">Kết quả</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="tr.line_ids.sorted(key=lambda l: l.subject_id.code or '')" t-as="line">
+                                        <td><span t-esc="line_index + 1"/></td>
+                                        <td><span t-esc="line.subject_id.code"/></td>
+                                        <td><span t-esc="line.subject_id.name"/></td>
+                                        <td class="text-center"><span t-esc="'%g' % line.credit"/></td>
+                                        <td class="text-center"><span t-esc="'%.2f' % line.final_score"/></td>
+                                        <td class="text-center"><span t-esc="line.grade_letter"/></td>
+                                        <td class="text-center">
+                                            <span t-if="line.final_score &gt;= 5.0" style="color:green;font-weight:bold;">Đạt</span>
+                                            <span t-else="" style="color:red;">Không đạt</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="mb-3">
+                                <strong>GPA học kỳ:</strong> <span t-esc="'%.2f' % tr.term_gpa"/> ·
+                                <strong>GPA tích lũy:</strong> <span t-esc="'%.2f' % (acc_points / acc_credits if acc_credits else 0.0)"/> ·
+                                <strong>Xếp loại:</strong> <span t-esc="dict(tr._fields['classification'].selection).get(tr.classification, '—')"/>
+                            </p>
+                        </t>
 
                         <div class="row mt-5">
                             <div class="col-6 text-center">
