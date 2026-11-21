@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Portal',
-    'version': '17.0.1.2.0',
+    'version': '17.0.1.3.0',
     'category': 'Education',
     'summary': 'Student Portal for University Student Management System',
     'author': 'Your Company',

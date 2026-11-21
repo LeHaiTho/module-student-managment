@@ -125,7 +125,7 @@
                             <td><t t-esc="score.self_total"/></td>
                             <td><t t-esc="score.advisor_total"/></td>
                             <td><t t-esc="score.final_total"/></td>
-                            <td><t t-esc="dict(score._fields['classification'].selection).get(score.classification)"/></td>
+                            <td><t t-esc="dict(score._fields['classification'].selection).get(score.classification) or 'Chưa xếp loại'"/></td>
                             <td><span class="badge bg-secondary"><t t-esc="dict(score._fields['state'].selection).get(score.state)"/></span></td>
                         </tr>
                         <tr t-if="not conduct_scores"><td colspan="6" class="text-center text-muted">Chưa có điểm rèn luyện.</td></tr>

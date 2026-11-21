@@ -1,6 +1,6 @@
 {
     'name': 'University SMS - Conduct Score',
-    'version': '17.0.1.2.0',
+    'version': '17.0.1.3.0',
     'category': 'Education',
     'summary': 'Đánh giá rèn luyện sinh viên (workflow 3 cấp)',
     'author': 'Your Company',

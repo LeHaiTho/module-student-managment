@@ -95,9 +95,13 @@ class UnivSmsConductScore(models.Model):
             parts = [p for p in (rec.student_id.student_code, rec.student_id.name, rec.period_id.name) if p]
             rec.name = 'Rèn luyện – ' + ' – '.join(parts) if parts else 'Phiếu rèn luyện'
 
-    @api.depends('final_total')
+    @api.depends('final_total', 'state')
     def _compute_classification(self):
         for rec in self:
+            # Chỉ xếp loại khi khoa đã duyệt; trước đó điểm cuối chưa chốt
+            if rec.state != 'dean_approved':
+                rec.classification = False
+                continue
             score = rec.final_total
             if score >= 90:
                 rec.classification = 'excellent'
