@@ -1,26 +1,29 @@
-# Giá»¯ dá»‹ch vá»¥ Render free luÃ´n thá»©c: Render ngá»§ sau 15 phÃºt khÃ´ng cÃ³ truy cáº­p.
-# GitHub cháº¡y lá»‹ch Ä‘á»‹nh ká»³ theo "best effort", cÃ³ thá»ƒ trá»… vÃ i phÃºt.
+# Giá»¯ dá»‹ch vá»¥ Render free luÃ´n thá»©c (Render ngá»§ sau 15 phÃºt khÃ´ng cÃ³ truy cáº­p).
+# Lá»‹ch GitHub khÃ´ng Ä‘áº£m báº£o Ä‘Ãºng giá», nÃªn má»—i láº§n cháº¡y sáº½ ping liÃªn tá»¥c ~5h50;
+# láº§n cháº¡y má»›i há»§y láº§n cÅ©, luÃ´n cÃ³ Ä‘Ãºng má»™t lÆ°á»£t Ä‘ang ping.
 name: keep-alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 permissions: {}
 
+concurrency:
+  group: keep-alive
+  cancel-in-progress: true
+
 jobs:
   ping:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 355
     steps:
-      - name: Ping /web/health
+      - name: Ping /web/health every 4 minutes
         run: |
-          for i in 1 2 3; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 https://univ-sms-odoo.onrender.com/web/health || true)
-            echo "attempt $i: HTTP $code"
-            [ "$code" = "200" ] && exit 0
-            sleep 20
+          end=$(( $(date +%s) + 350*60 ))
+          while [ "$(date +%s)" -lt "$end" ]; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 120 https://univ-sms-odoo.onrender.com/web/health || true)
+            echo "$(date -u +%H:%M:%S) HTTP $code"
+            sleep 240
           done
-          echo "Service not healthy"
-          exit 1
